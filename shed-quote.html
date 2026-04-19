@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LayoutOS — Fudd Service Estimator</title>
+<link rel="stylesheet" href="shed-quote.css">
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────── -->
+<div id="app-header">
+  <span class="brand-sub">LayoutOS</span>
+  <span class="brand-main">Fudd Service</span>
+  <span class="brand-tag">Exterior Construction</span>
+  <span id="int-badge">⬡ INTERNAL MODE</span>
+  <span id="dev-badge">⬡ DEV MODE</span>
+</div>
+<div id="progress-bar"><div id="progress-fill" style="width:10%"></div></div>
+<div id="step-indicator">Step 1 of 11</div>
+
+<!-- ── Dev flag panel (dev mode only) ────────────────── -->
+<div id="dev-flag-panel">
+  <div id="dev-flag-panel-header">
+    <strong>⬡ DEV MODE</strong>
+    <span id="dev-flag-count">0 active</span>
+    <span style="color:#9ca3af;font-size:11px">Click flag to add note</span>
+    <span id="dev-flag-toggle">▼ expand</span>
+  </div>
+  <div id="dev-flag-body"></div>
+</div>
+
+<div id="main">
+<div id="int-layout-wrap">
+<div id="col-config">
+
+  <!-- ── STEP 1: Style ──────────────────────────────── -->
+  <div class="step-card active" id="s1">
+    <div class="step-title">Step 1 — Choose a Style</div>
+    <div class="style-grid" id="style-grid"></div>
+    <div id="s1-error" class="field-error" style="margin-top:8px"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goStep(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Size ───────────────────────────────── -->
+  <div class="step-card" id="s2">
+    <div class="step-title">Step 2 — Size</div>
+    <div class="field-row">
+      <div class="field">
+        <label for="sel-width">Width (ft)</label>
+        <select id="sel-width" onchange="onWidthChange()"></select>
+      </div>
+      <div class="field">
+        <label for="sel-length">Length (ft)</label>
+        <select id="sel-length"></select>
+      </div>
+    </div>
+    <div id="size-info" class="notice notice-info" style="display:none"></div>
+    <div id="s2-error" class="field-error"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Wall Height ────────────────────────── -->
+  <div class="step-card" id="s3">
+    <div class="step-title">Step 3 — Wall Height</div>
+    <div class="opt-group">
+      <div class="opt-row selected" id="wh-8" onclick="selectWallHeight(8)">
+        <input type="radio" name="wall-height" value="8" checked>
+        <div>
+          <div class="opt-label">8 ft — Standard</div>
+          <div class="opt-sub">Fits most residential needs. Most common.</div>
+        </div>
+        <div class="opt-price">Included</div>
+      </div>
+      <div class="opt-row" id="wh-10" onclick="selectWallHeight(10)">
+        <input type="radio" name="wall-height" value="10">
+        <div>
+          <div class="opt-label">10 ft — Tall Wall</div>
+          <div class="opt-sub">Extra headroom. Good for lofts or tall equipment.</div>
+        </div>
+        <div class="opt-price" id="wh-10-price">+Tall wall upgrade</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Roof ───────────────────────────────── -->
+  <div class="step-card" id="s4">
+    <div class="step-title">Step 4 — Roofing</div>
+    <div class="opt-group">
+      <div class="opt-row selected" id="roof-shingle" onclick="selectRoof('shingle')">
+        <input type="radio" name="roof" value="shingle" checked>
+        <div>
+          <div class="opt-label">Architectural Shingle</div>
+          <div class="opt-sub">Standard. Included in base price. GAF or equivalent.</div>
+        </div>
+        <div class="opt-price">Included</div>
+      </div>
+      <div class="opt-row" id="roof-metal" onclick="selectRoof('metal')">
+        <input type="radio" name="roof" value="metal">
+        <div>
+          <div class="opt-label">Metal R-Panel</div>
+          <div class="opt-sub">26ga steel ribbed panel. 3ft wide, ordered to length. Longer life, cleaner look.</div>
+        </div>
+        <div class="opt-price" id="metal-price-preview" data-dev-config="METAL_ROOF_MULTIPLIER">+12% on base</div>
+      </div>
+    </div>
+
+    <!-- Metal roof sub-options — shown only when metal selected -->
+    <div id="metal-roof-options" style="display:none; margin-top:14px">
+      <div class="notice notice-warn">
+        Steel roofs condensate in heated or regularly used buildings.
+        A vapor barrier prevents drip and premature rot.
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="opt-group-title">Roof Assembly Under Metal</div>
+
+        <div class="opt-row selected" id="rso-none" onclick="selectRoofSheathing('none')">
+          <input type="radio" name="roof-sheathing" value="none" checked>
+          <div>
+            <div class="opt-label">None</div>
+            <div class="opt-sub">No additional sheathing. Not recommended for heated spaces.</div>
+          </div>
+          <div class="opt-price">Included</div>
+        </div>
+
+        <div class="opt-row" id="rso-vb" onclick="selectRoofSheathing('vb_only')">
+          <input type="radio" name="roof-sheathing" value="vb_only">
+          <div>
+            <div class="opt-label">Vapor Barrier</div>
+            <div class="opt-sub">Rolls of vapor barrier under metal. Prevents condensation drip. Good for any regularly used building.</div>
+          </div>
+          <div class="opt-price" id="rso-vb-price">+See total</div>
+        </div>
+
+        <div class="opt-row" id="rso-osb" onclick="selectRoofSheathing('osb')">
+          <input type="radio" name="roof-sheathing" value="osb">
+          <div>
+            <div class="opt-label">OSB Sheathing + Fir Strips</div>
+            <div class="opt-sub">OSB under metal with fir strips at 24in OC. Metal screws to strips, not OSB. Improves seal and longevity.</div>
+          </div>
+          <div class="opt-price" id="rso-osb-price">+See total</div>
+        </div>
+
+        <div class="opt-row" id="rso-zip" onclick="selectRoofSheathing('zip')">
+          <input type="radio" name="roof-sheathing" value="zip">
+          <div>
+            <div class="opt-label">Zip System + Fir Strips</div>
+            <div class="opt-sub">Zip System 5/8" roof panels + taped seams + fir strips. Most airtight roof assembly — recommended for conditioned spaces.</div>
+          </div>
+          <div class="opt-price" id="rso-zip-price">+See total</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ice & Water Shield -->
+    <div class="opt-group" style="margin-top:14px">
+      <div class="opt-group-title">Ice &amp; Water Shield</div>
+      <div class="opt-row" id="chk-icw-row" onclick="toggleIceWater()">
+        <input type="checkbox" id="chk-icw">
+        <div>
+          <div class="opt-label">Add ice &amp; water shield</div>
+          <div class="opt-sub">Self-adhering membrane — lower 6ft eaves or full roof.</div>
+        </div>
+        <div class="opt-price">+Material cost</div>
+      </div>
+      <div id="icw-config" style="display:none;padding:10px 14px;background:var(--surface2);border-radius:6px;margin-top:6px">
+        <div style="font-size:13px;margin-bottom:6px;color:var(--muted)">Coverage</div>
+        <div class="opt-row" id="icw-lower6" onclick="selectIceWaterCoverage('lower6')" style="border:none;padding:4px 0">
+          <input type="radio" name="icw-cov" value="lower6" checked>
+          <span style="font-size:13px">Lower 6ft eaves only</span>
+        </div>
+        <div class="opt-row" id="icw-full" onclick="selectIceWaterCoverage('full')" style="border:none;padding:4px 0">
+          <input type="radio" name="icw-cov" value="full">
+          <span style="font-size:13px">Full roof coverage</span>
+        </div>
+        <div id="icw-preview" style="font-size:12px;margin-top:8px;color:var(--muted)"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(5)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Siding ────────────────────────────── -->
+  <div class="step-card" id="s5">
+    <div class="step-title">Step 5 — Siding</div>
+    <div class="opt-group">
+      <div class="opt-row selected" id="siding-lp" onclick="selectSiding('lp')">
+        <input type="radio" name="siding" value="lp" checked>
+        <div>
+          <div class="opt-label">LP SmartSide</div>
+          <div class="opt-sub">Engineered wood panel. Standard. Included in base price.</div>
+        </div>
+        <div class="opt-price">Included</div>
+      </div>
+      <div class="opt-row" id="siding-vinyl" onclick="selectSiding('vinyl')">
+        <input type="radio" name="siding" value="vinyl">
+        <div>
+          <div class="opt-label">Vinyl Siding</div>
+          <div class="opt-sub">Low maintenance. Add-on varies by size.</div>
+        </div>
+        <div class="opt-price" id="vinyl-price-preview" data-dev-config="VINYL_TIERS">+TBD</div>
+      </div>
+    </div>
+
+    <!-- Wall sheathing sub-options — shown only when vinyl selected -->
+    <div id="vinyl-wall-options" style="display:none; margin-top:14px">
+      <div style="margin-top:4px">
+        <div class="opt-group-title">Wall Assembly Under Vinyl</div>
+
+        <div class="opt-row selected" id="wso-none" onclick="selectWallSheathing('none')">
+          <input type="radio" name="wall-sheathing" value="none" checked>
+          <div>
+            <div class="opt-label">None</div>
+            <div class="opt-sub">Vinyl over framing only. Suitable for basic storage.</div>
+          </div>
+          <div class="opt-price">Included</div>
+        </div>
+
+        <div class="opt-row" id="wso-hw" onclick="selectWallSheathing('house_wrap')">
+          <input type="radio" name="wall-sheathing" value="house_wrap">
+          <div>
+            <div class="opt-label">House Wrap</div>
+            <div class="opt-sub">Tyvek or equivalent weather-resistant barrier under vinyl. Recommended for any regularly used building.</div>
+          </div>
+          <div class="opt-price" id="wso-hw-price">+See total</div>
+        </div>
+
+        <div class="opt-row" id="wso-zip" onclick="selectWallSheathing('zip')">
+          <input type="radio" name="wall-sheathing" value="zip">
+          <div>
+            <div class="opt-label">Zip System Wall</div>
+            <div class="opt-sub">7/16 Zip System panels (green) + taped seams. Most airtight wall assembly — recommended for conditioned spaces.</div>
+          </div>
+          <div class="opt-price" id="wso-zip-price">+See total</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(4)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(6)">Next →</button>
+    </div>
+  </div>
+
+</div><!-- /col-config -->
+<div id="col-addons">
+
+  <!-- ── STEP 6: Foundation / Slab (INTERNAL PREVIEW) ─ -->
+  <div class="step-card step-internal-preview" id="s6">
+    <div class="step-internal-badge">INTERNAL PREVIEW</div>
+    <div class="step-title">Step 6 — Foundation / Slab</div>
+    <p style="font-size:13px;color:var(--amber);margin-bottom:14px">
+      This step is internal-only while slab pricing is being finalised. Clients
+      will not see it — they skip straight from Siding to Conditioning.
+    </p>
+
+    <div class="opt-group">
+      <div class="opt-group-title">Foundation / Slab</div>
+      <div class="opt-row" id="chk-slab-row" onclick="toggleSlab()">
+        <input type="checkbox" id="chk-slab">
+        <div>
+          <div class="opt-label">Add Concrete Slab</div>
+          <div class="opt-sub">Site-poured slab, priced per sqft. Rate editable per quote.</div>
+        </div>
+      </div>
+      <div id="slab-config" style="display:none;margin-top:10px;padding:14px;background:#f9fafb;border:1px solid var(--border);border-radius:5px">
+        <div class="field-row">
+          <div class="field">
+            <label>Slab Rate ($/sqft)</label>
+            <input type="number" id="slab-rate" value="13" min="0" step="0.01"
+                   oninput="onSlabChange()">
+            <div class="hint">Interim rate — adjust per site conditions.</div>
+          </div>
+        </div>
+        <div class="opt-row" id="chk-nofloor-row" onclick="toggleNoFloor()" style="margin-top:10px">
+          <input type="checkbox" id="chk-nofloor">
+          <div>
+            <div class="opt-label">No wood floor (slab is the floor)</div>
+            <div class="opt-sub">Credit: $3/sqft off base (interim rate — final floor logic pending).</div>
+          </div>
+        </div>
+        <div id="slab-price-preview" style="font-size:13px;margin-top:8px;color:var(--green)"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(5)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(7)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 7: Add-Ons ──────────────────────────── -->
+  <div class="step-card" id="s7">
+    <div class="step-title">Step 7 — Add-Ons</div>
+
+    <!-- Man Doors -->
+    <div class="opt-group">
+      <div class="opt-group-title">Man Doors</div>
+      <div id="man-door-builder">
+        <div style="font-size:13px;color:var(--muted);padding:8px 0">No man doors added. Click below to add one.</div>
+      </div>
+      <button class="btn btn-secondary" style="font-size:13px;padding:6px 14px;margin-top:4px"
+              onclick="addManDoorRow()">+ Add Man Door</button>
+    </div>
+
+    <!-- Windows -->
+    <div class="opt-group">
+      <div class="opt-group-title">Windows</div>
+      <div id="window-builder">
+        <div style="font-size:13px;color:var(--muted);padding:8px 0">No windows added. Click below to add one.</div>
+      </div>
+      <button class="btn btn-secondary" style="font-size:13px;padding:6px 14px;margin-top:4px"
+              onclick="addWindowRow()">+ Add Window</button>
+    </div>
+
+    <!-- Garage Doors -->
+    <div class="opt-group">
+      <div class="opt-group-title">Garage Doors</div>
+      <div id="garage-door-builder">
+        <div style="font-size:13px;color:var(--muted);padding:8px 0">No garage doors added. Click below to add one.</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+        <button class="btn btn-secondary" style="font-size:13px;padding:6px 14px"
+                onclick="addGarageDoorRow()">+ Add Garage Door</button>
+        <div style="font-size:12px;color:var(--muted);align-self:center">
+          ⚑ 12×7 and 16×7 framed openings may require load-bearing upgrade
+        </div>
+      </div>
+    </div>
+
+    <!-- Ramps -->
+    <div class="opt-group">
+      <div class="opt-group-title">Ramps</div>
+      <div class="qty-row">
+        <label>Ramp (per 60in opening)</label>
+        <input type="number" id="qty-ramp" value="0" min="0" max="4"
+               onchange="onQtyChange()">
+        <span class="qty-note" id="price-ramp">$120 per opening</span>
+      </div>
+    </div>
+
+    <!-- Shelving -->
+    <div class="opt-group">
+      <div class="opt-group-title">Shelving</div>
+      <div class="opt-row" id="chk-shelf-row" onclick="toggleShelving()">
+        <input type="checkbox" id="chk-shelving">
+        <div>
+          <div class="opt-label">Add Shelving</div>
+          <div class="opt-sub">2ft deep — 2× framing + sheathing, installed per linear foot</div>
+        </div>
+      </div>
+      <div id="shelving-config" style="display:none;margin-top:10px;padding:14px;background:#f9fafb;border:1px solid var(--border);border-radius:5px">
+        <div class="field-row">
+          <div class="field">
+            <label>Linear Feet of Shelving</label>
+            <input type="number" id="shelving-lf" value="8" min="1" max="200"
+                   oninput="onShelvingChange()">
+            <div class="hint">Total length to install</div>
+          </div>
+          <div class="field">
+            <label>Shelf Material</label>
+            <select id="shelving-material" onchange="onShelvingChange()">
+              <option value="osb">OSB (standard)</option>
+              <option value="plywood">Premium Plywood (+upgrade)</option>
+            </select>
+          </div>
+        </div>
+        <div id="shelving-price-preview" style="font-size:13px;margin-top:4px;color:var(--green)"></div>
+      </div>
+    </div>
+
+    <!-- Loft -->
+    <div class="opt-group">
+      <div class="opt-group-title">Loft</div>
+      <div class="opt-row" id="chk-loft-row" onclick="toggleLoft()">
+        <input type="checkbox" id="chk-loft">
+        <div>
+          <div class="opt-label">Request Loft</div>
+          <div id="loft-avail-note" class="opt-sub">Select a style and size first to check availability.</div>
+        </div>
+        <div class="opt-price tbd">TBD</div>
+      </div>
+    </div>
+
+    <!-- ── Dev: future add-on placeholders ──────────── -->
+    <div class="dev-placeholder-group">
+      <div class="opt-group-title" style="color:var(--amber)">Future Add-Ons</div>
+      <div class="dev-placeholder-item">
+        <strong>Electrical Rough-In</strong>
+        <span>Panel + circuits — quoted per scope</span>
+        <span class="dev-ph-badge">NOT ACTIVE</span>
+      </div>
+      <div class="dev-placeholder-item">
+        <strong>Paint / Stain</strong>
+        <span>Exterior finish — depends on siding type</span>
+        <span class="dev-ph-badge">NOT ACTIVE</span>
+      </div>
+      <div class="dev-placeholder-item">
+        <strong>Custom Size</strong>
+        <span>Non-standard footprints — manual override only</span>
+        <span class="dev-ph-badge">NOT ACTIVE</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(6)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(8)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 8: Demo ────────────────────────────────── -->
+  <div class="step-card" id="s8">
+    <div class="step-title">Step 8 — Demo Existing Shed?</div>
+    <div class="opt-row" id="demo-no-row" onclick="selectDemo(false)">
+      <input type="radio" name="demo-radio" value="no" checked>
+      <div><div class="opt-label">No demo needed</div></div>
+    </div>
+    <div class="opt-row" id="demo-yes-row" onclick="selectDemo(true)">
+      <input type="radio" name="demo-radio" value="yes">
+      <div><div class="opt-label">Yes — remove existing shed</div>
+        <div class="opt-sub">Flat rate by shed size. Wood-frame, no concrete, truck-accessible.</div>
+      </div>
+    </div>
+    <div id="demo-size-fields" style="display:none; margin-top:14px">
+      <div class="field-row">
+        <div class="field">
+          <label>Existing Shed Width (ft)</label>
+          <select id="demo-width">
+            <option>8</option><option>10</option><option>12</option>
+            <option>14</option><option>16</option><option>20</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Existing Shed Length (ft)</label>
+          <select id="demo-length">
+            <option>8</option><option>10</option><option>12</option>
+            <option>14</option><option>16</option><option>20</option>
+            <option>24</option><option>28</option><option>32</option>
+            <option>36</option><option>40</option>
+          </select>
+        </div>
+      </div>
+      <!-- Concrete removal -->
+      <div class="opt-row" id="chk-demo-concrete-row" style="margin-top:10px"
+           onclick="toggleDemoConcrete()">
+        <input type="checkbox" id="chk-demo-concrete">
+        <div>
+          <div class="opt-label">Concrete slab removal</div>
+          <div class="opt-sub">Add if existing shed is on a poured slab — priced per sqft</div>
+        </div>
+      </div>
+      <div id="demo-concrete-config" style="display:none;margin-top:8px;padding:10px 12px;background:#f9fafb;border:1px solid var(--border);border-radius:5px">
+        <label style="font-size:13px;font-weight:600">Rate per sqft ($)</label>
+        <input type="number" id="demo-concrete-rate" value="1.15" min="0.50" max="10" step="0.05"
+               oninput="onDemoConcreteRateChange()"
+               style="width:90px;margin-left:10px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px">
+        <span style="font-size:12px;color:var(--muted);margin-left:8px">Default $1.15 — $450 for 20×20</span>
+      </div>
+      <div id="demo-price-preview" class="notice notice-info" style="margin-top:8px"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(7)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(9)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 9: Customer Info ──────────────────────── -->
+  <div class="step-card" id="s9">
+    <div class="step-title">Step 9 — Customer Information</div>
+    <div class="field">
+      <label for="cust-name">Name *</label>
+      <input type="text" id="cust-name" placeholder="Full name" oninput="onNameChange()">
+    </div>
+    <div class="field">
+      <label for="cust-addr">Address</label>
+      <input type="text" id="cust-addr" placeholder="Street, City, State, ZIP">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="cust-email">Email</label>
+        <input type="email" id="cust-email" placeholder="email@example.com">
+      </div>
+      <div class="field">
+        <label for="cust-phone">Phone</label>
+        <input type="tel" id="cust-phone" placeholder="(585) 555-0000">
+      </div>
+    </div>
+    <div id="est-number-preview" class="notice notice-info" style="margin-top:8px"></div>
+    <div id="s9-error" class="field-error"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(8)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(10)">Preview Quote →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 10: Summary + Generate ───────────────── -->
+  <div class="step-card" id="s10">
+    <div class="step-title">Step 10 — Quote Summary</div>
+
+    <!-- Internal mode panel -->
+    <div id="internal-panel">
+      <h4>⬡ INTERNAL MODE</h4>
+
+      <div style="margin-bottom:12px">
+        <div class="opt-group-title">Price Overrides</div>
+        <div id="override-list"></div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <div class="opt-group-title">Add Manual Line Item</div>
+        <div id="manual-items-list"></div>
+        <button class="btn btn-secondary" style="font-size:13px;padding:6px 14px" onclick="addManualItem()">+ Add Item</button>
+      </div>
+
+      <div class="field" style="margin-bottom:6px">
+        <label>Payment Terms</label>
+        <select id="payment-tier" onchange="rebuildPreview()" data-dev-config="PAYMENT_LARGE_THRESHOLD">
+          <option value="standard">Standard — 50% deposit, balance on completion</option>
+          <option value="three_tier">3-Tier Payment Schedule</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label style="font-weight:400;color:var(--muted)">Custom wording override <span style="font-size:11px">(leave blank to use selection above — clear to omit payment block)</span></label>
+        <textarea id="custom-payment-note" rows="2"
+          placeholder="e.g. Payment in full due upon completion."></textarea>
+      </div>
+
+      <div class="field" style="margin-bottom:6px;padding-top:10px;border-top:1px solid #c4b5fd">
+        <label>Point of Contact <span style="font-weight:400;font-size:11px;color:var(--muted)">— printed on every estimate</span></label>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input type="text" id="int-est-name" placeholder="Estimator name" style="flex:1">
+          <button type="button" id="int-suf-jr" class="qdraft-suf-btn" onclick="toggleIntEstSuffix('Jr.')">Jr.</button>
+          <button type="button" id="int-suf-sr" class="qdraft-suf-btn" onclick="toggleIntEstSuffix('Sr.')">Sr.</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <input type="text" id="int-est-phone" placeholder="Phone">
+          <input type="text" id="int-est-email" placeholder="Email">
+        </div>
+        <input type="text" id="int-est-web" placeholder="Website (optional)" style="width:100%">
+      </div>
+
+      <div class="field">
+        <label>Internal Notes (not shown on customer quote)</label>
+        <textarea id="internal-notes" placeholder="Site notes, crew info, special instructions..."></textarea>
+      </div>
+
+      <div id="margin-view" style="margin-top:10px">
+        <div class="opt-group-title">Material Cost Estimate</div>
+        <div id="margin-detail" class="ql-materials"></div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #c4b5fd">
+        <div class="opt-group-title">Quick Actions</div>
+        <button class="btn btn-internal" style="font-size:13px;padding:6px 14px"
+                onclick="generateQuote()">⬡ Quick Generate (Draft)</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">
+          Opens generate modal — pre-fills from current state. Works from any step.
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote preview -->
+    <div id="quote-preview"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(9)">← Back</button>
+      <button class="btn btn-green" onclick="generateQuote()">Generate Estimate →</button>
+      <button class="btn btn-internal" id="int-direct-btn" style="display:none"
+              onclick="generateQuote(true)">⬡ Internal Generate</button>
+    </div>
+  </div>
+
+</div><!-- /col-addons -->
+
+<div id="col-framing">
+  <div id="framing-panel">
+    <div id="framing-panel-header">
+      <strong>⬡ FRAMING TAKEOFF</strong>
+      <button class="fp-print-btn" onclick="printFramingPanel()" title="Print takeoff">🖨</button>
+      <div class="fp-ctrl-group">
+        <label>Studs:</label>
+        <select id="fp-stud-size" onchange="onFramingConfigChange()">
+          <option value="2x4x8">2×4×8 (std)</option>
+          <option value="2x6x8">2×6×8 (upgrade)</option>
+          <option value="2x4x10">2×4×10 (10ft wall)</option>
+          <option value="2x6x10">2×6×10 (10ft wide)</option>
+        </select>
+      </div>
+      <div class="fp-ctrl-group">
+        <label>Rafters:</label>
+        <select id="fp-rafter-spacing" onchange="onFramingConfigChange()">
+          <option value="24">24in OC</option>
+          <option value="16">16in OC</option>
+        </select>
+      </div>
+    </div>
+    <div id="framing-panel-body">
+      <div style="color:var(--muted);font-style:italic;padding:12px 0;font-size:12px">
+        Select a style and size to see framing takeoff.
+      </div>
+    </div>
+  </div>
+</div><!-- /col-framing -->
+
+</div><!-- /int-layout-wrap -->
+</div><!-- /main -->
+
+<!-- ── Dev margin view (dev mode only) ─────────────────── -->
+<div id="dev-margin-panel-wrap">
+  <div id="dev-margin-panel">
+    <h4>⬡ MARGIN VIEW — per line item</h4>
+    <div id="dev-margin-content" style="color:var(--muted);font-style:italic;font-size:12px">
+      Go to Step 10 to populate margin data.
+    </div>
+  </div>
+</div>
+
+<div id="page-footer">
+  www.fuddservice.com &nbsp;|&nbsp; LayoutOS — built by Fudd
+  &nbsp;|&nbsp; <a href="shed-estimates.html" style="color:var(--muted)">Saved Estimates</a>
+</div>
+
+<!-- ── Unified Generate modal ────────────────────────── -->
+<div id="gen-modal-backdrop">
+  <div id="gen-modal-box">
+    <h3>Review &amp; Generate Estimate</h3>
+
+    <div class="gen-row2">
+      <div>
+        <div class="gen-label">Estimate #</div>
+        <input class="gen-input" id="gen-estnum">
+      </div>
+      <div>
+        <div class="gen-label">Date</div>
+        <input class="gen-input" id="gen-date">
+      </div>
+    </div>
+
+    <div class="gen-label">Customer</div>
+    <input class="gen-input" id="gen-name" placeholder="Name" style="margin-bottom:8px">
+    <input class="gen-input" id="gen-addr" placeholder="Address" style="margin-bottom:8px">
+    <div class="gen-row2">
+      <input class="gen-input" id="gen-phone" placeholder="Phone">
+      <input class="gen-input" id="gen-email" placeholder="Email">
+    </div>
+
+    <div class="gen-label">Project</div>
+    <div id="gen-spec-card" style="display:none"></div>
+    <div id="gen-desc-wrap" style="display:none">
+      <textarea class="gen-textarea" id="gen-desc" rows="7"
+        placeholder="Describe the work — or leave blank to generate from wizard selections.&#10;&#10;Example:&#10;Concrete slab — 12×20ft&#10;Site prep and haul-off&#10;No shed"></textarea>
+    </div>
+
+    <div class="gen-label">Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — overrides calculated total)</span></div>
+    <input class="gen-input" id="gen-price" type="number" min="0" step="0.01" placeholder="0.00">
+
+    <div class="gen-label" style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">Point of Contact</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input class="gen-input" id="gen-est-name" placeholder="Name" style="flex:1;margin-bottom:0">
+      <button type="button" id="gen-suf-jr" class="gen-suf-btn" onclick="toggleGenSuffix('Jr.')">Jr.</button>
+      <button type="button" id="gen-suf-sr" class="gen-suf-btn" onclick="toggleGenSuffix('Sr.')">Sr.</button>
+    </div>
+    <div class="gen-row2" style="margin-bottom:8px">
+      <input class="gen-input" id="gen-est-phone" placeholder="Phone">
+      <input class="gen-input" id="gen-est-email" placeholder="Email">
+    </div>
+    <input class="gen-input" id="gen-est-web" placeholder="Website (optional)">
+
+    <div class="gen-label" style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">Payment Terms <span style="font-weight:400;text-transform:none;letter-spacing:0">(clear to omit from estimate)</span></div>
+    <textarea class="gen-textarea" id="gen-payment" rows="2"></textarea>
+
+    <div id="gen-modal-btns">
+      <button class="btn btn-secondary" onclick="closeGenModal()">Cancel</button>
+      <button class="btn btn-green" onclick="confirmGenModal()">Generate →</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="./shed-quote/core.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+test/
+*.log
+CLAUDE.md
+*.backup.html
+*.backup2.html
+shed-logic-backup*

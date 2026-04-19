@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fudd Service — Estimate</title>
+<style>
+/* ── Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 13px;
+  color: #111;
+  background: #e8e8e8;
+  padding: 20px;
+  line-height: 1.45;
+}
+
+/* ── Print toolbar (hidden when printing) ─────────────── */
+#toolbar {
+  max-width: 760px;
+  margin: 0 auto 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.tbtn {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tbtn-blue  { background: #1d4ed8; color: #fff; }
+.tbtn-blue:hover { background: #1e3a8a; }
+.tbtn-gray  { background: #d1d5db; color: #111; }
+.tbtn-gray:hover  { background: #9ca3af; }
+.toolbar-label { font-size: 12px; color: #6b7280; margin-left: 8px; }
+
+/* ── Page (the "paper") ───────────────────────────────── */
+#page {
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 48px 52px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.18);
+}
+
+/* ── Company header ───────────────────────────────────── */
+.co-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 3px solid #1d4ed8;
+}
+.co-left .co-name {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #1e3a8a;
+  line-height: 1;
+}
+.co-left .co-tagline {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.co-left .co-addr {
+  font-size: 12px;
+  color: #374151;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.co-right {
+  text-align: right;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1.7;
+}
+.co-right .est-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e3a8a;
+  display: block;
+  margin-bottom: 2px;
+}
+.co-right .est-number {
+  font-size: 20px;
+  font-weight: 900;
+  color: #1d4ed8;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── TO block ─────────────────────────────────────────── */
+.to-block {
+  margin-bottom: 22px;
+  display: flex;
+  gap: 40px;
+}
+.to-section { flex: 1; }
+.to-section .to-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9ca3af;
+  margin-bottom: 5px;
+}
+.to-section .to-content {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #111;
+}
+.to-section .to-content strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ── Line items table ─────────────────────────────────── */
+.line-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+  font-size: 13px;
+}
+.line-table thead tr {
+  background: #1e3a8a;
+  color: #fff;
+}
+.line-table thead th {
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.line-table thead th.right { text-align: right; }
+.line-table thead th.center { text-align: center; }
+
+.line-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+.line-table tbody tr:hover { background: #f9fafb; }
+.line-table tbody td {
+  padding: 8px 10px;
+  vertical-align: top;
+}
+.line-table tbody td.center { text-align: center; }
+.line-table tbody td.right { text-align: right; font-weight: 600; }
+.line-table tbody td.tbd { text-align: right; color: #b45309; font-weight: 600; }
+.line-table .flag-note {
+  font-size: 11px;
+  color: #b45309;
+  margin-top: 2px;
+  font-style: italic;
+}
+
+/* Section divider row in table */
+.line-table .section-row td {
+  background: #f3f4f6;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #6b7280;
+  padding: 5px 10px;
+  border-bottom: 1px solid #d1d5db;
+}
+
+/* ── Totals block ─────────────────────────────────────── */
+.totals-block {
+  width: 100%;
+  margin-top: 0;
+  border-top: 2px solid #1e3a8a;
+}
+.totals-block td {
+  padding: 8px 10px;
+}
+.totals-block .total-row td {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+.totals-block .paid-row td {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  border-top: 1px solid #e5e7eb;
+}
+.totals-block .total-label { width: 70%; }
+.totals-block .total-amount { text-align: right; }
+
+/* ── Notes section ────────────────────────────────────── */
+.notes-section {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1.7;
+}
+.notes-section .notes-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+.notes-section p { margin-bottom: 4px; }
+
+/* ── Payment terms ────────────────────────────────────── */
+.payment-block {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #1e40af;
+}
+.payment-block strong { display: block; margin-bottom: 2px; font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; }
+
+/* ── Footer ───────────────────────────────────────────── */
+.doc-footer {
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ── Point of contact block ──────────────────────────── */
+.estimator-block {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: #f9fafb;
+  display: inline-block;
+  min-width: 180px;
+}
+.estimator-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+.estimator-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 3px;
+}
+.estimator-detail {
+  font-size: 11px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* ── Error state ──────────────────────────────────────── */
+#load-error {
+  max-width: 600px;
+  margin: 60px auto;
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  display: none;
+}
+
+/* ════════════════════════════════════════════════════════
+   PRINT STYLES — hides all chrome, just the page
+════════════════════════════════════════════════════════ */
+@media print {
+  body      { background: #fff; padding: 0; }
+  #toolbar  { display: none !important; }
+  #page     { box-shadow: none; padding: 32px 40px; max-width: 100%; }
+  #load-error { display: none !important; }
+
+  /* Prevent table rows splitting across pages awkwardly */
+  .line-table tbody tr { page-break-inside: avoid; }
+  .notes-section { page-break-inside: avoid; }
+
+  @page {
+    size: letter portrait;
+    margin: 0.6in 0.7in;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Toolbar ─────────────────────────────────────────── -->
+<div id="toolbar">
+  <button class="tbtn tbtn-blue" onclick="window.print()">🖨 Print / Save PDF</button>
+  <button class="tbtn tbtn-gray" onclick="window.history.back()">← Back to Estimator</button>
+  <button class="tbtn tbtn-gray" onclick="window.close()">✕ Close</button>
+  <span class="toolbar-label" id="toolbar-estnum"></span>
+</div>
+
+<!-- ── The document ────────────────────────────────────── -->
+<div id="page">
+  <!-- content injected by script -->
+</div>
+
+<div id="load-error">
+  <h2 style="color:#dc2626">No quote data found.</h2>
+  <p style="margin-top:8px;color:#6b7280">Return to the estimator and click <strong>Generate Estimate</strong>.</p>
+  <button class="tbtn tbtn-blue" style="margin-top:16px" onclick="window.history.back()">← Back to Estimator</button>
+</div>
+
+<script type="module">
+import { formatCurrency, formatDate, formatEstimateHeader } from './layoutos-core.js';
+
+// ── Load quote from URL param or localStorage ────────────
+function loadQuote() {
+  // Try URL param first (?q=base64)
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('q');
+    if (raw) {
+      return JSON.parse(decodeURIComponent(escape(atob(raw))));
+    }
+  } catch (_) {}
+
+  // Fallback to localStorage
+  try {
+    const stored = localStorage.getItem('layoutos_current_quote');
+    if (stored) return JSON.parse(stored);
+  } catch (_) {}
+
+  return null;
+}
+
+// ── Format helpers ───────────────────────────────────────
+// formatCurrency imported from layoutos-core.js
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Fallback company info for quotes generated before Pass 2
+// (quotes built after Pass 2 embed company info in q.company)
+const FUDD_COMPANY = {
+  name:    'Fudd Service',
+  tagline: 'Exterior Construction Services',
+  address: '6 North Street',
+  city:    'Le Roy NY 14482',
+  email:   'fuddservice@gmail.com',
+  phone:   '585-297-0777',
+  website: 'www.fuddservice.com',
+};
+
+// ── Render ────────────────────────────────────────────────
+function render(q) {
+  document.title = `Fudd Service — Estimate ${q.estimateNumber}`;
+  document.getElementById('toolbar-estnum').textContent = `Estimate ${q.estimateNumber} | ${q.date}`;
+
+  const b = q.building  || {};
+  const p = q.pricing   || {};
+
+  // Build normalized header via core helper
+  // Falls back to FUDD_COMPANY for quotes that predate Pass 2
+  const h = formatEstimateHeader(
+    q.company || FUDD_COMPANY,
+    q.customer || {},
+    q.estimateNumber,
+    q.date
+  );
+
+  // ── Header ──────────────────────────────────────────────
+  let html = `
+    <div class="co-header">
+      <div class="co-left">
+        <div class="co-name">${escHtml(h.company.name.toUpperCase())}</div>
+        <div class="co-tagline">${escHtml(h.company.tagline)}</div>
+        <div class="co-addr">
+          ${escHtml(h.company.address)}<br>
+          ${escHtml(h.company.city)}<br>
+          ${escHtml(h.company.email)}<br>
+          ${escHtml(h.company.phone)}
+        </div>
+      </div>
+      <div class="co-right">
+        <span class="est-label">Estimate</span>
+        <span class="est-number">${escHtml(h.estimateNumber)}</span>
+        <br><br>
+        <strong>Date:</strong> ${escHtml(h.date)}<br>
+        <strong>Valid:</strong> 90 days
+      </div>
+    </div>
+  `;
+
+  // ── TO block ────────────────────────────────────────────
+  const c = h.customer;
+  html += `
+    <div class="to-block">
+      <div class="to-section">
+        <div class="to-label">To</div>
+        <div class="to-content">
+          <strong>${escHtml(c.name) || '—'}</strong><br>
+          ${c.address ? escHtml(c.address) + '<br>' : ''}
+          ${c.email   ? escHtml(c.email)   + '<br>' : ''}
+          ${c.phone   ? escHtml(c.phone)         : ''}
+        </div>
+      </div>
+      <div class="to-section">
+        <div class="to-label">Project</div>
+        <div class="to-content">
+          ${(() => {
+            const lines = [];
+            // Free-text description (from quick draft) — preserves line breaks
+            if (q.projectDesc) {
+              lines.push(escHtml(q.projectDesc).replace(/\n/g, '<br>'));
+            }
+            // Shed spec — only shown when a style was actually selected
+            if (b.style) {
+              if (q.projectDesc) lines.push(''); // visual spacer
+              lines.push(`${escHtml(styleLabel(b.style))} — ${b.width}×${b.length}ft`);
+              lines.push(`${b.sqft} sqft &nbsp;|&nbsp; ${b.wallHeight}ft walls`);
+              lines.push((b.roof === 'metal' ? 'Metal R-Panel roof' : 'Architectural shingle roof') + ` &nbsp;|&nbsp; ${b.roofPitch || '5/12'} pitch`);
+              lines.push(b.siding === 'vinyl' ? 'Vinyl siding' : 'LP SmartSide siding');
+              if ((b.conditioningLevel || 0) > 0)
+                lines.push('Conditioning: Level ' + b.conditioningLevel);
+            }
+            return lines.length ? lines.join('<br>') : '&nbsp;';
+          })()}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ── Notes field (pre-table) ──────────────────────────────
+  html += `
+    <div class="notes-section" style="margin-bottom:14px">
+      <div class="notes-title">Notes</div>
+  `;
+  if (q.autoNotes && q.autoNotes.length) {
+    q.autoNotes.forEach(n => { html += `<p>• ${escHtml(n)}</p>`; });
+  } else {
+    html += `<p>&nbsp;</p>`;
+  }
+  html += `</div>`;
+
+  // ── Line items table ─────────────────────────────────────
+  html += `
+    <table class="line-table">
+      <thead>
+        <tr>
+          <th style="width:50%">Description</th>
+          <th class="center" style="width:8%">Qty</th>
+          <th class="right" style="width:14%">Unit</th>
+          <th class="right" style="width:14%">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  // Group into sections for readability
+  const groups = groupLineItems(q.lineItems, !!q._internalMode);
+
+  groups.forEach(group => {
+    if (group.label) {
+      html += `<tr class="section-row"><td colspan="4">${escHtml(group.label)}</td></tr>`;
+    }
+    if (group.type === 'slab' && q.slabSpec) {
+      html += `<tr><td colspan="4" style="font-size:11px;color:#6b7280;padding:2px 0 6px;font-style:italic">${escHtml(q.slabSpec)}</td></tr>`;
+    }
+    group.items.forEach(item => {
+      const costStr = item.isTBD ? 'TBD' : formatCurrency(item.total);
+      const costClass = item.isTBD ? 'tbd' : 'right';
+      const unitStr  = item.isTBD ? '—'
+        : (item.qty > 1 || (q._internalMode && item.isConditioning))
+          ? formatCurrency(item.unitPrice)
+          : '';
+      // Sheathing items: strip parenthetical material counts from customer-facing description
+      const desc = (item.isRoofSheathing || item.isWallSheathing)
+        ? item.description.replace(/\s+\(\d+\s+(?:rolls?|sheets?|LF)\)/g, '')
+        : item.description;
+      html += `
+        <tr>
+          <td>
+            ${escHtml(desc)}
+            ${item.flag ? `<div class="flag-note">⚑ ${escHtml(item.flag)}</div>` : ''}
+          </td>
+          <td class="center">${item.qty || 1}</td>
+          <td class="right" style="color:#6b7280">${unitStr}</td>
+          <td class="${costClass}">${costStr}</td>
+        </tr>
+      `;
+    });
+    if (group.type === 'slab' && q.slabNote) {
+      html += `<tr><td colspan="4" style="font-size:11px;color:#b45309;padding:6px 0 2px"><em>⚑ ${escHtml(q.slabNote)}</em></td></tr>`;
+    }
+  });
+
+  html += `</tbody></table>`;
+
+  // ── Totals ───────────────────────────────────────────────
+  html += `
+    <table class="totals-block">
+      <tr class="total-row">
+        <td class="total-label">TOTAL</td>
+        <td class="total-amount">${formatCurrency(q.manualPrice > 0 ? q.manualPrice : p.total)}</td>
+      </tr>
+      <tr class="paid-row">
+        <td class="total-label">PAID</td>
+        <td class="total-amount"></td>
+      </tr>
+    </table>
+  `;
+
+  // ── Payment terms — omitted if paymentNote is explicitly blank ──
+  const payNote = q.paymentNote !== undefined ? q.paymentNote
+    : '50% deposit required to schedule. Balance due upon completion.';
+  if (payNote) {
+    html += `
+      <div class="payment-block">
+        <strong>Payment Terms</strong>
+        ${escHtml(payNote)}
+      </div>
+    `;
+  }
+
+  // ── Point of contact ─────────────────────────────────────
+  if (q.estimator && (q.estimator.name || q.estimator.phone || q.estimator.email || q.estimator.website)) {
+    const e = q.estimator;
+    html += `
+      <div class="estimator-block">
+        <div class="estimator-label">Prepared by</div>
+        ${e.name    ? `<div class="estimator-name">${escHtml(e.name)}</div>`    : ''}
+        ${e.phone   ? `<div class="estimator-detail">📞 ${escHtml(e.phone)}</div>`  : ''}
+        ${e.email   ? `<div class="estimator-detail">✉ ${escHtml(e.email)}</div>`   : ''}
+        ${e.website ? `<div class="estimator-detail">${escHtml(e.website)}</div>`   : ''}
+      </div>
+    `;
+  }
+
+  // ── Footer ───────────────────────────────────────────────
+  html += `
+    <div class="doc-footer">
+      <span>${escHtml(h.company.website)}</span>
+      <span>LayoutOS — built by Fudd</span>
+    </div>
+  `;
+
+  document.getElementById('page').innerHTML = html;
+}
+
+// ── Group line items into labeled sections ────────────────
+function groupLineItems(items, isInternal) {
+  if (!items || !items.length) return [];
+
+  // Client mode: merge rollIntoBase items into the base line, then drop
+  // any isInternalOnly items from display. Total stays correct because
+  // the base line absorbs their value.  UPDATE 2026-04-17.
+  let working = items;
+  if (!isInternal) {
+    const rollUpTotal = items
+      .filter(i => i.isInternalOnly && i.rollIntoBase)
+      .reduce((s, i) => s + (i.total || 0), 0);
+    working = items
+      .map(i => {
+        if (i.isBase && rollUpTotal) {
+          const newTotal = (i.total || 0) + rollUpTotal;
+          return { ...i, total: newTotal, unitPrice: newTotal };
+        }
+        return i;
+      })
+      .filter(i => !i.isInternalOnly);
+  }
+
+  const groups = [];
+  const slabItems  = working.filter(i => i.id === 'slab' || i.id === 'no_floor');
+  const base       = working.filter(i => i.isBase);
+  const sheathing  = working.filter(i => i.isRoofSheathing || i.isWallSheathing);
+  const upgrades   = working.filter(i =>
+    !i.isBase &&
+    !i.isRoofSheathing && !i.isWallSheathing &&
+    i.id !== 'demo' && !i.isManual && i.id !== 'slab' && i.id !== 'no_floor'
+  );
+  const demoItems  = working.filter(i => i.id === 'demo');
+  const manuals    = working.filter(i => i.isManual);
+
+  if (base.length)       groups.push({ label: 'Base Shed Package',          items: base });
+  if (slabItems.length)  groups.push({ label: 'Foundation / Concrete Slab', items: slabItems, type: 'slab' });
+  if (upgrades.length)   groups.push({ label: 'Upgrades & Add-Ons',         items: upgrades });
+  if (sheathing.length)  groups.push({ label: 'Roof & Wall Assembly',       items: sheathing });
+  if (demoItems.length)  groups.push({ label: 'Demolition',                 items: demoItems });
+  if (manuals.length)    groups.push({ label: 'Additional Items',           items: manuals });
+
+  return groups;
+}
+
+// ── Style label lookup (no module available here) ────────
+const STYLE_LABELS = {
+  economy: 'Economy Gable', deluxe: 'Deluxe Gable',
+  carriage: 'Carriage / Eco', mini: 'Mini Barn',
+  low: 'Low Barn', maxi: 'Maxi Barn', double: 'Double Decker',
+};
+function styleLabel(key) {
+  return STYLE_LABELS[key] || key || 'Custom';
+}
+
+// ── Boot ─────────────────────────────────────────────────
+const quote = loadQuote();
+if (quote) {
+  render(quote);
+} else {
+  document.getElementById('page').style.display = 'none';
+  document.getElementById('load-error').style.display = 'block';
+}
+</script>
+</body>
+</html>

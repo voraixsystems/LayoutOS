@@ -1,0 +1,120 @@
+{
+  "_comment": "LayoutOS material price reference — UPDATE THIS FILE WHEN PRICES CHANGE",
+  "_last_updated": "2026-04-18",
+  "_source": "MaterialPrices.json + current market",
+  "_updates": {
+    "2026-04-16": "osb_7_16_sheet 14.55→13 (add osb_sheet alias); zip_wall_sheet 40.20→45; zip_roof_sheet 52.36→60; add metal_panel_per_lf alias; add premium_plywood_sheet; add man_door_solid/9lite/fanlite; add window_single_hung/sliding"
+  },
+
+  "lp_smartside_sheet": 50.00,
+
+  "osb_7_16_sheet": 13.00,
+  "osb_sheet": 13.00,
+
+  "zip_wall_sheet": 50.00,
+  "zip_roof_sheet": 60.00,
+  "zip_tape_roll": 39.00,
+
+  "vapor_barrier_roll": 150.00,
+  "felt_roll": 25.00,
+  "house_wrap_roll": 80.00,
+
+  "fir_strip_per_lf": 0.75,
+  "fir_strip_8ft": 4.00,
+
+  "shingle_square": 43.47,
+
+  "metal_panel_sqft": 3.79,
+  "metal_panel_per_lf": 3.79,
+
+  "premium_plywood_sheet": 50.00,
+
+  "man_door_complete": 520.00,
+  "man_door_solid": 520.00,
+  "man_door_9lite": 560.00,
+  "man_door_fanlite": 545.00,
+
+  "window_24x27_complete": 200.00,
+  "window_single_hung": 200.00,
+  "window_sliding": 260.00,
+
+  "garage_door_install": 350.00,
+  "garage_door_8x7_std": 450.00,
+  "garage_door_8x7_r6": 600.00,
+  "garage_door_8x8_std": 2150.00,
+  "garage_door_9x7_std": 700.00,
+  "garage_door_9x7_r6": 1150.00,
+  "garage_door_seal_9ft": 57.00,
+  "garage_door_keyed_handle": 50.00,
+
+  "framed_opening_8x7": 225.00,
+  "framed_opening_8x8": 250.00,
+  "framed_opening_9x7": 275.00,
+  "framed_opening_9x8": 300.00,
+  "framed_opening_10x7": 350.00,
+  "framed_opening_12x7": 425.00,
+  "framed_opening_16x7": 500.00,
+
+  "ramp_per_opening": 120.00,
+
+  "ice_water_shield_roll": 250.00,
+  "roofing_nail_box": 59.00,
+
+  "2x4x8_spf": 3.85,
+  "2x4x10_spf": 5.74,
+  "2x4x12_spf": 7.07,
+  "2x4x16_spf": 10.83,
+  "2x6x8_spf": 8.15,
+  "2x6x10_spf": 12.48,
+  "2x6x12_spf": 12.34,
+  "2x6x16_spf": 18.52,
+  "2x8x12_spf": 14.44,
+  "2x8x16_spf": 19.28,
+  "2x10x12_spf": 18.33,
+  "2x10x16_spf": 32.63,
+  "4x4x16_pt": 38.00,
+  "subfloor_sheet": 59.75,
+  "drip_edge_10ft": 9.98,
+  "vapor_barrier_install": 150.00,
+  "vapor_barrier_sqft_per_roll": 500,
+
+  "_notes": {
+    "lp_smartside_sheet": "LP SmartSide 8in OC panel, 4x8 sheet, SKU 509-095",
+    "osb_7_16_sheet": "7/16 OSB sheathing, 4x8 sheet — legacy key, use osb_sheet going forward",
+    "osb_sheet": "7/16 OSB sheathing, 4x8 sheet — VOLATILE, verify before quoting. UPDATE 2026-04-16: $14.55→$13",
+    "zip_wall_sheet": "7/16 Zip System wall panel (green). UPDATE 2026-04-16: $40.20→$45",
+    "zip_roof_sheet": "5/8 Zip System roof panel (brown). UPDATE 2026-04-16: $52.36→$60",
+    "zip_tape_roll": "3-3/4in x 90ft roll, ~8 sheets per roll",
+    "vapor_barrier_roll": "500 sqft coverage per roll, 15% overlap factor",
+    "felt_roll": "15lb felt, ~400 sqft per roll",
+    "house_wrap_roll": "Tyvek or equiv, ~1000 sqft per roll",
+    "fir_strip_per_lf": "1x3 or 2x3 fir furring strip, 24in OC — REQUIRED under metal panels over OSB or Zip. Cannot screw metal to OSB directly.",
+    "shingle_square": "GAF Architectural per bundle (33.33 sqft) — price per SQUARE (100sqft)",
+    "metal_panel_sqft": "26ga rib panel per sqft — legacy key, use metal_panel_per_lf",
+    "metal_panel_per_lf": "26ga rib panel, 3ft wide, ordered to slope/wall length. Metal panels are NOT 4x8 sheets — order to length. Standard lengths: 8, 10, 12, 14, 16ft. UPDATE 2026-04-16",
+    "premium_plywood_sheet": "3/4in BC plywood, 4x8 sheet — shelving upgrade over standard OSB. UPDATE 2026-04-16: added",
+    "man_door_complete": "Legacy key — use man_door_solid, man_door_9lite, man_door_fanlite going forward",
+    "man_door_solid": "36x80 Primed Steel prehung — JELD-WEN THDJW166100275 (LH) / THDJW166100278 (RH) — Home Depot — installed all-in",
+    "man_door_9lite": "36x80 9-Lite Steel prehung — JELD-WEN — Home Depot — SKU VERIFY — installed all-in",
+    "man_door_fanlite": "36x80 Fan-Lite Steel prehung — JELD-WEN — Home Depot — SKU VERIFY — installed all-in",
+    "window_24x27_complete": "Legacy key — use window_single_hung or window_sliding going forward",
+    "window_single_hung": "24x30 Single Hung Vinyl — Project Source SKU 5013341551 — Lowes — installed all-in",
+    "window_sliding": "36x36 Sliding Vinyl — Project Source SKU 5013341567 — Lowes — installed all-in",
+    "garage_door_install": "Install labor only — $350 per door",
+    "garage_door_8x7_std": "8x7 Clopay Non-Insulated — material only",
+    "garage_door_8x7_r6": "8x7 Clopay R-6.5 Insulated — material only",
+    "garage_door_8x8_std": "8x8 Non-Insulated — 10ft wall only — material only",
+    "garage_door_9x7_std": "9x7 Non-Insulated — material only",
+    "garage_door_9x7_r6": "9x7 R-6.5 Insulated — material only",
+    "garage_door_seal_9ft": "9ft door seal strip — white or brown, same price. 3 per door (bottom + 2 sides)",
+    "garage_door_keyed_handle": "Exterior keyed entry handle — without it door opens from inside only",
+    "framed_opening_8x7": "Framed opening 8x7 — labor + header materials, client supplies door",
+    "framed_opening_8x8": "Framed opening 8x8 — 10ft wall only",
+    "framed_opening_9x7": "Framed opening 9x7",
+    "framed_opening_9x8": "Framed opening 9x8 — 10ft wall only",
+    "framed_opening_10x7": "Framed opening 10x7",
+    "framed_opening_12x7": "Framed opening 12x7 — LVL header, load-bearing note applies",
+    "framed_opening_16x7": "Framed opening 16x7 — double LVL, structural upgrade likely",
+    "ramp_per_opening": "Per 60in opening, PT lumber ramp"
+  }
+}
