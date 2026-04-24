@@ -1,1 +1,1 @@
-https://voraixsystems.github.io/LayoutOS/shed-quote.html
+https://voraixsystems.github.io/LayoutOS/apps/shed/shed-quote.html
