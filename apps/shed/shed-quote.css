@@ -537,24 +537,24 @@ body.dev-mode [data-dev-config] {
   outline-offset: 2px;
 }
 
-/* ── Internal mode 3-column layout ────────────────────────── */
-#col-config, #col-addons { display: block; }
+/* ── Internal mode layout ──────────────────────────────────── */
+#col-config { display: block; }
 #col-framing { display: none; }
 
 body.internal-mode #main {
   max-width: none;
   padding: 8px 12px 60px;
+  margin-left: 148px;
 }
 body.internal-mode #int-layout-wrap {
   display: flex;
   align-items: flex-start;
   gap: 14px;
 }
-body.internal-mode #col-config,
-body.internal-mode #col-addons {
+body.internal-mode #col-config {
   flex: 1;
-  min-width: 260px;
-  max-width: 420px;
+  min-width: 300px;
+  max-width: 520px;
 }
 body.internal-mode #col-framing {
   display: block;
@@ -565,6 +565,30 @@ body.internal-mode .step-card { display: block !important; }
 body.internal-mode .btn-row   { display: none  !important; }
 body.internal-mode #progress-bar,
 body.internal-mode #step-indicator { display: none !important; }
+
+/* Collapsed step — only title visible */
+body.internal-mode .step-card:not(.step-expanded) > *:not(.step-title) {
+  display: none !important;
+}
+body.internal-mode .step-card:not(.step-expanded) .step-title {
+  margin-bottom: 0;
+  padding-bottom: 10px;
+  border-bottom: none;
+  cursor: pointer;
+}
+body.internal-mode .step-card:not(.step-expanded) .step-title::after {
+  content: '  ▸';
+  color: var(--muted);
+  font-size: 11px;
+}
+body.internal-mode .step-card.step-expanded .step-title {
+  cursor: pointer;
+}
+body.internal-mode .step-card.step-expanded .step-title::after {
+  content: '  ▾';
+  color: var(--muted);
+  font-size: 11px;
+}
 
 /* ── Framing panel ─────────────────────────────────────────── */
 #framing-panel {
@@ -837,4 +861,81 @@ body.dev-mode #dev-margin-panel-wrap {
 
 /* ── Carriage variant buttons ───────────────────────────── */
 .cv-btn { transition: border-color 0.15s; }
+
+/* ── Step nav sidebar (LAYOUT mode only) ────────────────── */
+#step-nav { display: none; }
+
+body.internal-mode #step-nav {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 50px;
+  width: 140px;
+  height: calc(100vh - 50px);
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 2px solid var(--internal);
+  z-index: 200;
+}
+body.internal-mode #step-nav.collapsed {
+  width: 36px;
+}
+body.internal-mode #step-nav.collapsed .snav-title,
+body.internal-mode #step-nav.collapsed #step-nav-list { display: none; }
+body.internal-mode #step-nav.collapsed #step-nav-toggle { transform: rotate(180deg); }
+
+#step-nav-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: var(--internal);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+#step-nav-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+.snav-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.snav-item:last-child { border-bottom: none; }
+.snav-item:hover { background: var(--int-lt); }
+.snav-num {
+  font-size: 10px;
+  font-weight: 700;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.snav-label { font-size: 11px; color: var(--muted); }
+.snav-item.snav-done .snav-num  { background: var(--green); color: #fff; }
+.snav-item.snav-done .snav-label { color: var(--text); }
+.snav-item.snav-current { background: var(--int-lt); }
+.snav-item.snav-current .snav-num  { background: var(--internal); color: #fff; }
+.snav-item.snav-current .snav-label { color: var(--internal); font-weight: 700; }
 .cv-btn.selected { border-color: var(--blue) !important; background: var(--blue-lt, #eff6ff) !important; }

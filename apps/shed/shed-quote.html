@@ -31,6 +31,15 @@
 </div>
 
 <div id="main">
+
+<div id="step-nav">
+  <div id="step-nav-hdr">
+    <span class="snav-title">Steps</span>
+    <button id="step-nav-toggle" onclick="toggleStepNav()">◀</button>
+  </div>
+  <div id="step-nav-list"></div>
+</div>
+
 <div id="int-layout-wrap">
 <div id="col-config">
 
@@ -297,8 +306,6 @@
     </div>
   </div>
 
-</div><!-- /col-config -->
-<div id="col-addons">
 
   <!-- ── STEP 6: Foundation / Slab (INTERNAL PREVIEW) ─ -->
   <div class="step-card step-internal-preview" id="s6">
@@ -625,7 +632,7 @@
     </div>
   </div>
 
-</div><!-- /col-addons -->
+</div><!-- /col-config -->
 
 <div id="col-framing">
   <div id="framing-panel">
@@ -673,6 +680,7 @@
 <div id="page-footer">
   www.fuddservice.com &nbsp;|&nbsp; LayoutOS — built by Fudd
   &nbsp;|&nbsp; <a href="shed-estimates.html" style="color:var(--muted)">Saved Estimates</a>
+  &nbsp;|&nbsp; <a href="#" id="footer-draft-link" style="display:none;color:var(--amber)" onclick="resumeDraft();return false;">Resume Draft</a>
 </div>
 
 <!-- ── Unified Generate modal ────────────────────────── -->
