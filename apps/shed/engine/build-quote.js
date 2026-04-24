@@ -4,7 +4,7 @@
 // ============================================================
 // PURPOSE: The conductor. Takes raw user inputs from the UI
 //   and produces a full, priced, ready-to-render quote object
-//   by calling the other shed/* modules in the right order.
+//   by calling the other engine/* modules in the right order.
 //
 // API (exported):
 //   buildQuote(inputs)  — main entry point
@@ -19,29 +19,23 @@
 //       priceOverrides {},
 //       manualItems []
 //     }
-//     Returns the complete quote object that shed-output.html
+//     Returns the complete quote object that core/proposal.html
 //     renders from.
 //
-// INTERNAL helpers (not exported):
-//   generateAutoNotes(quoteData)  — auto customer-facing notes
-//   selectPaymentTerms(total, tierOverride)  — payment string
-//   applyOverride(overrides, id, defaultVal) — per-item price
-//     override lookup
-//
 // Depends on:
-//   shed/config.js   (CONFIG)
-//   shed/anchor.js   (ANCHOR — for description label lookup)
-//   shed/prices.js   (getPrices)
-//   shed/pricing.js  (getBasePrice)
-//   shed/materials.js (calculateMaterials)
-//   shed/addons.js   (calculateVinylAddon, calculateDemoPrice,
-//                     getConditioningPackage,
-//                     calculateRoofSheathing,
-//                     calculateWallSheathing,
-//                     calculateShelving, getLoftAvailability)
-//   ../layoutos-core.js (getNextEstimateNumber, formatDate)
+//   engine/config.js   (CONFIG)
+//   engine/anchor.js   (ANCHOR — for description label lookup)
+//   engine/prices.js   (getPrices)
+//   engine/pricing.js  (getBasePrice)
+//   engine/materials.js (calculateMaterials)
+//   engine/addons.js   (calculateVinylAddon, calculateDemoPrice,
+//                       getConditioningPackage,
+//                       calculateRoofSheathing,
+//                       calculateWallSheathing,
+//                       calculateShelving, getLoftAvailability)
+//   core/layoutos-core.js (getNextEstimateNumber, formatDate)
 //
-// Consumed by: shed-logic.js (facade re-export).
+// Consumed by: apps/shed/shed-logic.js (facade re-export).
 // ============================================================
 
 import { CONFIG } from './config.js';
@@ -56,12 +50,11 @@ import {
   calculateShelving, getLoftAvailability,
   calculateGarageDoors,
 } from './addons.js';
-import { getNextEstimateNumber, formatDate } from '../layoutos-core.js';
+import { getNextEstimateNumber, formatDate } from '../../../core/layoutos-core.js';
 
 // ------------------------------------------------------------
 // generateAutoNotes(quoteData)
 // Returns array of automatic customer-facing notes.
-// Extracted from buildQuote() to keep that function clean.
 // ------------------------------------------------------------
 function generateAutoNotes(quoteData) {
   const { roof, addons, conditioning, roofSheathing, wallSheathing, loftRequested, shelvingSpec, garageDoorItems, gdResult } = quoteData;
@@ -74,14 +67,11 @@ function generateAutoNotes(quoteData) {
     );
   }
 
-  // Loft — new system (loftRequested) or legacy flag
   const hasLoft = loftRequested || (addons && addons.loftFlag);
   if (hasLoft) notes.push('Loft included — final price confirmed at walkthrough.');
 
-  // Shelving — new system (shelvingSpec) or legacy flag
   const hasShelving = (shelvingSpec && shelvingSpec.enabled) || (addons && addons.shelvingFlag);
   if (hasShelving && !(shelvingSpec && shelvingSpec.enabled)) {
-    // legacy flag
     notes.push('Shelving quoted per linear foot — contact for details.');
   }
 
@@ -93,9 +83,7 @@ function generateAutoNotes(quoteData) {
     notes.push('Garage door material price varies — verify current Home Depot price before finalizing.');
   }
 
-  notes.push(`Roof pitch: ${CONFIG.ROOF_PITCH_LABEL} standard. Non-standard pitch is available by request — contact us for pricing and engineering review.`);
-  notes.push(CONFIG.DISCLAIMER);
-  notes.push(CONFIG.DELIVERY_NOTE);
+  notes.push(...CONFIG.ESTIMATE_NOTES_BASE);
 
   if (roofSheathing && roofSheathing.notes && roofSheathing.notes.length) {
     notes.push(...roofSheathing.notes);
@@ -112,8 +100,6 @@ function generateAutoNotes(quoteData) {
 
 // ------------------------------------------------------------
 // selectPaymentTerms(total, tierOverride)
-// Returns the correct payment note string.
-// Extracted from buildQuote() to keep that function clean.
 // ------------------------------------------------------------
 function selectPaymentTerms(total, tierOverride) {
   return (tierOverride === 'three_tier' || total >= CONFIG.PAYMENT_LARGE_THRESHOLD)
@@ -123,15 +109,6 @@ function selectPaymentTerms(total, tierOverride) {
 
 // ------------------------------------------------------------
 // buildQuote(inputs)
-// inputs = {
-//   style, width, length, wallHeight, roof, siding,
-//   conditioningLevel, addons{ manDoors, windows,
-//   garageDoors, ramps, loftFlag, shelvingFlag },
-//   demo{ enabled, width, length },
-//   customer{ name, address, email, phone },
-//   internalNotes, paymentTier, priceOverrides{}, manualItems[]
-// }
-// Returns full quote object ready for shed-output.html
 // ------------------------------------------------------------
 export function buildQuote(inputs) {
   const {
@@ -139,16 +116,15 @@ export function buildQuote(inputs) {
     conditioningLevel, addons, demo, customer,
     internalNotes, paymentTier, priceOverrides, manualItems,
     estimateNumber,
-    // New optional fields (UPDATE 2026-04-16)
-    roofSheathingOption,  // 'none'|'vb_only'|'osb'|'zip' — for metal roofs
-    wallSheathingOption,  // 'none'|'house_wrap'|'zip' — for vinyl siding only
-    manDoorItems,         // [{type:'solid'|'9lite'|'fanlite', swing:'left'|'right', qty:n}]
-    windowItems,          // [{type:'single_hung'|'sliding', operation:'left'|'right'|null, qty:n}]
-    shelvingSpec,         // {enabled:bool, linearFt:n, material:'osb'|'plywood'}
-    loftRequested,        // bool — replaces addons.loftFlag when present
-    slab,                 // {enabled:bool, ratePerSqft:n, noWoodFloor:bool} — UPDATE 2026-04-17
-    iceWater,             // {enabled:bool, coverage:'lower6'|'full'}
-    garageDoorItems,      // [{category:'door'|'framing', spec, sealColor, keyedHandle, qty}]
+    roofSheathingOption,
+    wallSheathingOption,
+    manDoorItems,
+    windowItems,
+    shelvingSpec,
+    loftRequested,
+    slab,
+    iceWater,
+    garageDoorItems,
   } = inputs;
 
   const sqft      = width * length;
@@ -165,11 +141,32 @@ export function buildQuote(inputs) {
   }
 
   // ── Metal roof add-on ──────────────────────────────────
-  // +12% applied on (base + vinyl)
   let metalRoofAddon = 0;
   if (roof === 'metal') {
     metalRoofAddon = Math.round((basePrice + vinylAddon) * CONFIG.METAL_ROOF_MULTIPLIER);
   }
+
+  // Panel linear footage — shared by gauge + premium color calcs
+  const pitch    = inputs.pitch || 5;
+  const halfSpan = width / 2;
+  const slopeLen = Math.sqrt(halfSpan * halfSpan + (halfSpan * pitch / 12) ** 2);
+  const panelLF  = roof === 'metal' ? Math.ceil(length / 3) * 2 * Math.ceil(slopeLen) : 0;
+
+  // 26ga gauge upcharge — difference vs 29ga standard, per panel LF
+  const roofGauge     = inputs.roofGauge || '29';
+  const gaugeCost     = (roof === 'metal' && roofGauge === '26')
+    ? Math.round(panelLF * ((p['metal_panel_26ga_per_lf'] || 3.75) - (p['metal_panel_29ga_per_lf'] || 3.29)))
+    : 0;
+
+  // Premium color upcharge — per panel LF (crinkle/matte finish)
+  const roofColorPremium = inputs.roofColorPremium || false;
+  const roofColorLabel   = inputs.roofColorLabel   || '';
+  const roofColorTier    = inputs.roofColorTier    || 'base';
+  const premiumColorCost = (roof === 'metal' && roofColorPremium)
+    ? Math.round(panelLF * (roofColorTier === 'crinkle'
+        ? CONFIG.METAL_PREMIUM_CRINKLE_PER_LF
+        : CONFIG.METAL_PREMIUM_BASE_PER_LF))
+    : 0;
 
   // ── Conditioning package (legacy tier system — Step 6) ─
   const conditioning = getConditioningPackage(conditioningLevel, materials, style, roof);
@@ -177,17 +174,13 @@ export function buildQuote(inputs) {
   // ── Ice & water shield ─────────────────────────────────
   const iceWaterResult = getIceWater(iceWater?.enabled || false, iceWater?.coverage || 'lower6', materials);
 
-  // ── New: independent roof sheathing (UPDATE 2026-04-16) ─
-  // Only applies when metal roof selected. Supersedes conditioning
-  // if roofSheathingOption is supplied by caller.
+  // ── Roof sheathing (UPDATE 2026-04-16) ─────────────────
   const roofSheathing = (roof === 'metal' && roofSheathingOption && roofSheathingOption !== 'none')
     ? calculateRoofSheathing(roofSheathingOption, materials)
     : null;
 
-  // ── New: independent wall sheathing (UPDATE 2026-04-16) ─
-  // Only applies to vinyl siding and only when the new wallConditioning
-  // selector is not active — wallConditioning owns wall assembly decisions.
-  const wallSheathing = (siding === 'vinyl' && wallSheathingOption && wallSheathingOption !== 'none' && (!wallConditioning || wallConditioning === 'none'))
+  // ── Wall sheathing (UPDATE 2026-04-16) ─────────────────
+  const wallSheathing = (siding === 'vinyl' && wallSheathingOption && wallSheathingOption !== 'none')
     ? calculateWallSheathing(wallSheathingOption, materials)
     : null;
 
@@ -195,10 +188,14 @@ export function buildQuote(inputs) {
   const lineItems = [];
 
   // Base shed shell
+  let baseStyleLabel = ANCHOR[style]?.label || style;
+  if (style === 'carriage' && inputs.carriageVariant) {
+    baseStyleLabel = inputs.carriageVariant === 'classic' ? 'Classic' : 'Carriage';
+  }
   lineItems.push({
     id: 'base',
     qty: 1,
-    description: `${ANCHOR[style]?.label || style} — ${width}×${length}ft, ${wallHeight}ft walls`,
+    description: `${baseStyleLabel} — ${width}×${length}ft, ${wallHeight}ft walls`,
     unitPrice: applyOverride(priceOverrides, 'base', basePrice),
     total: applyOverride(priceOverrides, 'base', basePrice),
     isBase: true,
@@ -217,16 +214,39 @@ export function buildQuote(inputs) {
 
   // Metal roof
   if (metalRoofAddon > 0) {
+    const colorNote = roofColorLabel ? ` — ${roofColorLabel}` : '';
     lineItems.push({
       id: 'metal_roof',
       qty: 1,
-      description: 'Metal R-Panel roof upgrade (+12%)',
+      description: `Metal R-Panel roof upgrade (+12%)${colorNote}`,
       unitPrice: applyOverride(priceOverrides, 'metal_roof', metalRoofAddon),
       total: applyOverride(priceOverrides, 'metal_roof', metalRoofAddon),
     });
   }
 
-  // ── New: roof sheathing line items (if new system used) ─
+  // 26ga gauge upcharge
+  if (gaugeCost > 0) {
+    lineItems.push({
+      id: 'roof_gauge_26',
+      qty: panelLF,
+      description: '26ga panel upgrade (vs 29ga standard)',
+      unitPrice: Math.round(((p['metal_panel_26ga_per_lf'] || 3.75) - (p['metal_panel_29ga_per_lf'] || 3.29)) * 100) / 100,
+      total: gaugeCost,
+    });
+  }
+
+  // Premium color upcharge
+  if (premiumColorCost > 0) {
+    lineItems.push({
+      id: 'roof_color_premium',
+      qty: 1,
+      description: `Premium panel finish — ${roofColorLabel}`,
+      unitPrice: premiumColorCost,
+      total: premiumColorCost,
+    });
+  }
+
+  // Roof sheathing line items
   if (roofSheathing && roofSheathing.lineItems.length > 0) {
     roofSheathing.lineItems.forEach((item, i) => {
       lineItems.push({
@@ -240,7 +260,7 @@ export function buildQuote(inputs) {
     });
   }
 
-  // ── New: wall sheathing line items (if new system used) ─
+  // Wall sheathing line items
   if (wallSheathing && wallSheathing.lineItems.length > 0) {
     wallSheathing.lineItems.forEach((item, i) => {
       lineItems.push({
@@ -254,7 +274,7 @@ export function buildQuote(inputs) {
     });
   }
 
-  // Conditioning package line items (legacy — stub returns empty; kept for safety)
+  // Conditioning package line items (legacy)
   if (conditioning.lineItems.length > 0) {
     conditioning.lineItems.forEach((item, i) => {
       lineItems.push({
@@ -275,7 +295,6 @@ export function buildQuote(inputs) {
 
   // ── Add-ons: Man doors ─────────────────────────────────
   if (manDoorItems && manDoorItems.length > 0) {
-    // New typed door system (UPDATE 2026-04-16)
     manDoorItems.forEach((door, i) => {
       const spec  = CONFIG.MAN_DOOR_SPECS[door.type] || CONFIG.MAN_DOOR_SPECS.solid;
       const price = applyOverride(priceOverrides, `man_door_${i}`,
@@ -294,21 +313,10 @@ export function buildQuote(inputs) {
         total: price * (door.qty || 1),
       });
     });
-  } else if (addons && addons.manDoors > 0) {
-    // Legacy: single door type, no swing
-    const price = applyOverride(priceOverrides, 'man_door', CONFIG.ADDON_MAN_DOOR);
-    lineItems.push({
-      id: 'man_door',
-      qty: addons.manDoors,
-      description: '36" insulated steel man door — installed',
-      unitPrice: price,
-      total: price * addons.manDoors,
-    });
   }
 
   // ── Add-ons: Windows ───────────────────────────────────
   if (windowItems && windowItems.length > 0) {
-    // New typed window system (UPDATE 2026-04-16)
     windowItems.forEach((win, i) => {
       const spec  = CONFIG.WINDOW_SPECS[win.type] || CONFIG.WINDOW_SPECS.single_hung;
       const price = applyOverride(priceOverrides, `window_${i}`,
@@ -323,19 +331,9 @@ export function buildQuote(inputs) {
         total: price * (win.qty || 1),
       });
     });
-  } else if (addons && addons.windows > 0) {
-    // Legacy: single window type
-    const price = applyOverride(priceOverrides, 'window', CONFIG.ADDON_WINDOW_24x27);
-    lineItems.push({
-      id: 'window',
-      qty: addons.windows,
-      description: '24×27 window — installed',
-      unitPrice: price,
-      total: price * addons.windows,
-    });
   }
 
-  // ── Garage doors (new typed system) ──────────────────────
+  // ── Garage doors ──────────────────────────────────────
   const gdResult = calculateGarageDoors(garageDoorItems || []);
   gdResult.lineItems.forEach((item, i) => {
     lineItems.push({
@@ -349,18 +347,6 @@ export function buildQuote(inputs) {
       isGarageDoor: true,
     });
   });
-  // Legacy fallback — qty-only system (no garageDoorItems supplied)
-  if ((!garageDoorItems || garageDoorItems.length === 0) && addons && addons.garageDoors > 0) {
-    const price = applyOverride(priceOverrides, 'garage_door', CONFIG.ADDON_GARAGE_DOOR_INSTALL);
-    lineItems.push({
-      id: 'garage_door',
-      qty: addons.garageDoors,
-      description: 'Garage door — install (verify current HD material price)',
-      unitPrice: price,
-      total: price * addons.garageDoors,
-      flag: 'Verify current Home Depot material price before finalizing.',
-    });
-  }
 
   if (addons && addons.ramps > 0) {
     const price = applyOverride(priceOverrides, 'ramp', CONFIG.ADDON_RAMP_PER_OPENING);
@@ -373,7 +359,7 @@ export function buildQuote(inputs) {
     });
   }
 
-  // ── Loft (new system or legacy flag) ──────────────────
+  // ── Loft ──────────────────────────────────────────────
   const useLoftNew = loftRequested !== undefined;
   const showLoft   = useLoftNew ? loftRequested : (addons && addons.loftFlag);
   if (showLoft) {
@@ -392,7 +378,7 @@ export function buildQuote(inputs) {
     });
   }
 
-  // ── Shelving (new formula or legacy flag) ─────────────
+  // ── Shelving ──────────────────────────────────────────
   const useShelvingNew = shelvingSpec && shelvingSpec.enabled && shelvingSpec.linearFt > 0;
   if (useShelvingNew) {
     const longestWall = Math.max(width, length);
@@ -401,13 +387,12 @@ export function buildQuote(inputs) {
       id: 'shelving',
       qty: 1,
       description: shelf.description,
-      unitPrice: shelf.materialCost,   // material cost only — sell price TBD at walkthrough
+      unitPrice: shelf.materialCost,
       total: shelf.materialCost,
       shelvingData: shelf,
       flag: shelf.fitsWarning || undefined,
     });
   } else if (addons && addons.shelvingFlag) {
-    // Legacy TBD flag
     lineItems.push({
       id: 'shelving',
       qty: 1,
@@ -446,9 +431,7 @@ export function buildQuote(inputs) {
     }
   }
 
-  // Slab & no-floor (UPDATE 2026-04-17) — shown as separate line items in
-  // internal mode; rolled into base in client mode (see shed-output.html).
-  // isInternalOnly flag lets the renderer decide display. Total always includes.
+  // Slab & no-floor (UPDATE 2026-04-17)
   let slabCost = 0, noFloorCredit = 0;
   if (slab && slab.enabled) {
     const rate = Number(slab.ratePerSqft) || CONFIG.SLAB_DEFAULT_RATE_PER_SQFT;
@@ -500,9 +483,8 @@ export function buildQuote(inputs) {
 
   return {
     estimateNumber: estimateNumber || getNextEstimateNumber(customer.name?.[0]),
-    date: formatDate(),    // "April 16, 2026" — long form via layoutos-core
+    date: formatDate(),
     customer: { ...customer },
-    // Company info embedded so shed-output.html is self-contained
     company: {
       name:    CONFIG.COMPANY_NAME,
       tagline: CONFIG.COMPANY_TAGLINE,
@@ -512,7 +494,8 @@ export function buildQuote(inputs) {
       phone:   CONFIG.COMPANY_PHONE,
       website: CONFIG.COMPANY_WEBSITE,
     },
-    building: { style, width, length, sqft, wallHeight, roof, siding, conditioningLevel, roofPitch: CONFIG.ROOF_PITCH_LABEL },
+    building: { style, width, length, sqft, wallHeight, roof, siding, conditioningLevel, roofPitch: CONFIG.ROOF_PITCH_LABEL,
+      roofColor: inputs.roofColor || null, roofColorLabel },
     materials,
     conditioning,
     roofSheathing: roofSheathing || null,
@@ -536,7 +519,6 @@ export function buildQuote(inputs) {
   };
 }
 
-// Helper: apply a price override if one exists for this id
 function applyOverride(overrides, id, defaultVal) {
   if (overrides && overrides[id] !== undefined) return Number(overrides[id]);
   return defaultVal;

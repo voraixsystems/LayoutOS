@@ -145,14 +145,14 @@ export function calculateFraming(params) {
 
   // ── FLOOR ──────────────────────────────────────────────────
   // Runners: 4×4×16 PT skids, staggered seams
-  const runnerCount     = width <= 10 ? 2 : width <= 14 ? 3 : width <= 16 ? 4 : 5;
+  const runnerCount     = Math.ceil(width / 2); // 2ft OC across width: 16ft→8, 12ft→6, 8ft→4
   const sticksPerRunner = Math.ceil(length / 16);
   const seamsPerRunner  = sticksPerRunner - 1;
   const totalSeams      = seamsPerRunner * runnerCount;
   const nailerCount     = totalSeams * 2;          // 2×4 nailer each side of every seam
   const nailerLF        = nailerCount * 2;          // 2ft each
   const runnerSticks    = sticksPerRunner * runnerCount;
-  const runnerCost      = runnerSticks * (p['4x4x16_pt'] || 38);
+  const runnerCost      = runnerSticks * (p['4x4x16_pt'] || 27.98);
   const nailerCost      = nailerLF * ((p['2x4x8_spf'] || 3.85) / 8);
 
   // Floor joists — 12in OC, spanning the width

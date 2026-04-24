@@ -1,0 +1,467 @@
+{
+  "PressureTreated": {
+    "4x4x8": {
+      "price": 12.38,
+      "sku": "256276",
+      "url": "https://www.homedepot.com/p/4-in-x-4-in-x-8-ft-2-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Timber-194354/205220341"
+    },
+    "4x4x10": {
+      "price": 18.08,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/4-in-x-4-in-x-10-ft-2-Pressure-Treated-Ground-Contact-Southern-Pine-Wood-Post-4220254/100025396"
+    },
+    "4x4x12": {
+      "price": 20.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/4-in-x-4-in-x-12-ft-2-Pressure-Treated-Ground-Contact-Southern-Pine-Timber-4230254/100073070"
+    },
+    "4x4x16": {
+      "price": 27.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/4-in-x-4-in-x-16-ft-2-Pressure-Treated-Timber-4250254/100087743"
+    },
+    "4x6x12": {
+      "price": 32.18,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/4-in-x-6-in-x-12-ft-2-Pressure-Treated-Ground-Contact-Southern-Pine-Timber-260430/100062638"
+    },
+    "6x6x8": {
+      "price": 34.78,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/6-in-x-6-in-x-8-ft-2-Pressure-Treated-Ground-Contact-Southern-Pine-Timber-260691/100071059"
+    },
+    "6x6x12": {
+      "price": 49.58,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/6-in-x-6-in-x-12-ft-2-Pressure-Treated-Ground-Contact-Southern-Pine-Timber-Wood-Post-6330254/100010238"
+    },
+    "2x4x8": {
+      "price": 5.08,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-4-in-x-8-ft-2-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-106147/206970948?MERCH=REC-_-fbt_test-_-100025396-_-2-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x4x10": {
+      "price": 8.08,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/WeatherShield-2-in-x-4-in-x-10-ft-1-Ground-Contact-Pressure-Treated-Lumber-1001787123/207096349"
+    },
+    "2x4x12": {
+      "price": 9.78,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/WeatherShield-2-in-x-4-in-x-12-ft-1-Ground-Contact-Pressure-Treated-Lumber-1001787124/207096351"
+    },
+    "2x4x16": {
+      "price": 14.18,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-4-in-x-16-ft-1-Pressure-Treated-Ground-Contact-Southern-Pine-Lumber-2250155/207170824"
+    },
+    "2x6x8": {
+      "price": 8.88,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/WeatherShield-2-in-x-6-in-x-8-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-253905/206966039"
+    },
+    "2x6x10": {
+      "price": 11.08,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/WeatherShield-2-in-x-6-in-x-10-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-253905/206966041"
+    },
+    "2x6x12": {
+      "price": 13.53,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-6-in-x-12-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-253905/206966029"
+    },
+    "2x6x16": {
+      "price": 18.43,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/WeatherShield-2-in-x-6-in-x-16-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-253905/206966030"
+    },
+    "2x8x8": {
+      "price": 12.63,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-8-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-106004/206937500"
+    },
+    "2x8x10": {
+      "price": 15.48,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-10-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-106004/206937502"
+    },
+    "2x8x12": {
+      "price": 18.83,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-12-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-106004/206937503"
+    },
+    "2x8x16": {
+      "price": 25.13,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-16-ft-1-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-106004/206937494"
+    },
+    "2x10x8": {
+      "price": 18.18,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-8-ft-2-Prime-or-Better-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-166298/206964278"
+    },
+    "2x10x10": {
+      "price": 22.48,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-10-ft-2-Prime-Pressure-Treated-Ground-Contact-Southern-Pine-Lumber-2524954/206893647?MERCH=REC-_-pip_alternatives-_-206964265-_-3-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x10x12": {
+      "price": 27.28,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-12-ft-2-Prime-Pressure-Treated-Ground-Contact-Southern-Pine-Lumber-2534954/206893708?MERCH=REC-_-fbt_test-_-206893647-_-2-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x10x16": {
+      "price": 36.38,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-16-ft-2-Prime-or-Better-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-166298/206964265?MERCH=REC-_-fbt_test-_-206937122-_-2-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x12x8": {
+      "price": 46.38,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-8-ft-2-Prime-Pressure-Treated-Lumber-021208MCGP/206947435"
+    },
+    "2x12x10": {
+      "price": 28.5,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-10-ft-2-Prime-or-Better-Ground-Contact-Pressure-Treated-Lumber-112851/206964329"
+    },
+    "2x12x12": {
+      "price": 30.68,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-12-ft-2-Prime-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-288730/301880852?MERCH=REC-_-irgaccessories-_-206937122-_-0-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x12x16": {
+      "price": 46.38,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-16-ft-Prime-Ground-Contact-Pressure-Treated-Lumber-21216MGY2HD/206937122"
+    },
+    "5/4x6x8": {
+      "price": 7.58,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/WeatherShield-5-4-in-x-6-in-x-8-ft-Standard-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Decking-Board-253919/206968441?MERCH=REC-_-pip_alternatives-_-206970948-_-1-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    }
+  },
+  "Fir": {
+    "2x8x8": {
+      "price": 9.63,
+      "sku": "604356",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-8-ft-2-Premium-Grade-Fir-Dimensional-Lumber-769887252895/329444946?MERCH=REC-_-fbt_test-_-202094201-_-2-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x8x10": {
+      "price": 12.17,
+      "sku": "604364",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-10-ft-2-Premium-Grade-Fir-Dimensional-Lumber-604364/204667922"
+    },
+    "2x8x12": {
+      "price": 14.42,
+      "sku": "604372",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-12-ft-2-Premium-Grade-Fir-Dimensional-Lumber-604372/206182009"
+    },
+    "2x8x16": {
+      "price": 19.28,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-8-in-x-16-ft-2-Premium-Grade-Fir-Dimensional-Lumber-915556/206182011"
+    },
+    "2x10x8": {
+      "price": 14.55,
+      "sku": "915564",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-8-ft-2-Premium-Grade-Fir-Dimensional-Lumber-915564/206182030"
+    },
+    "2x10x10": {
+      "price": 18.33,
+      "sku": "734446",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-10-ft-2-Premium-Grade-Fir-Dimensional-Lumber-734446/206182034"
+    },
+    "2x10x12": {
+      "price": 21.96,
+      "sku": "603708",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-12-ft-2-Premium-Grade-Fir-Dimensional-Lumber-2x10-12-2-btr-prime-doug-fir/300185014?MERCH=REC-_-fbt_test-_-206182037-_-3-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x10x16": {
+      "price": 32.63,
+      "sku": "603724",
+      "url": "https://www.homedepot.com/p/2-in-x-10-in-x-16-ft-2-Premium-Grade-Fir-Dimensional-Lumber-603724/206182037"
+    },
+    "2x12x8": {
+      "price": 19.47,
+      "sku": "707195",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-8-ft-2-Premium-Grade-Fir-Dimensional-Lumber-707195/202094201"
+    },
+    "2x12x10": {
+      "price": 24.25,
+      "sku": "707231",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-10-ft-2-Premium-Grade-Fir-Dimensional-Lumber-707231/202094202"
+    },
+    "2x12x12": {
+      "price": 29.12,
+      "sku": "603732",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-12-ft-2-and-Better-Prime-Douglas-Fir-Board-603732/206182079"
+    },
+    "2x12x16": {
+      "price": 47.36,
+      "sku": "603740",
+      "url": "https://www.homedepot.com/p/2-in-x-12-in-x-16-ft-2-and-Better-Prime-Douglas-Fir-Lumber-603740/206182080?MERCH=REC-_-rv_gm_pip_rr-_-203530031-_-206182080-_-N"
+    }
+  },
+  "Pine": {
+    "1x4x8": {
+      "price": 8.22,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/1-in-x-4-in-x-8-ft-Premium-Kiln-Dried-Square-Edge-Whitewood-Common-Board-914681/100023465"
+    },
+    "1x4x10": {
+      "price": 10.78,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/1-in-x-4-in-x-10-ft-Premium-Kiln-Dried-Square-Edge-Common-Softwood-Boards-914703/100044873"
+    },
+    "1x4x12": {
+      "price": 23.24,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/1-in-x-4-in-x-12-ft-Select-Kiln-Dried-Square-Edge-Whitewood-Common-Softwood-Boards-489355/100074289"
+    },
+    "2x4x8": {
+      "price": 3.85,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-4-in-x-96-in-2-Premium-Grade-KD-HT-Stud-058449/312528776?MERCH=REC-_-fbt_test-_-206182009-_-1-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x4x10": {
+      "price": 5.74,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-4-in-x-10-ft-2-Premium-Grade-SPF-Dimensional-Lumber-6091/314732316"
+    },
+    "2x4x12": {
+      "price": 7.07,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-4-in-x-12-ft-2-Premium-Grade-SPF-Dimensional-Lumber-058440/312528815?MERCH=REC-_-fbt_test-_-314753893-_-2-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x4x16": {
+      "price": 10.83,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-4-in-x-16-ft-2-Premium-Grade-SPF-Dimensional-Lumber-6091/314753893"
+    },
+    "2x6x8": {
+      "price": 8.15,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-6-in-x-8-ft-2-Premium-Grade-SPF-Dimensional-Lumber-058443/312528832"
+    },
+    "2x6x10": {
+      "price": 11.62,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-6-in-x-10-ft-2-Premium-Grade-SPF-Dimensional-Lumber-058444/312528837?MERCH=REC-_-fbr-_-329444946-_-1-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x6x12": {
+      "price": 12.34,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-6-in-x-12-ft-2-Premium-Grade-SPF-Dimensional-Lumber-058445/312528843?MERCH=REC-_-fbr-_-312528837-_-2-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "2x6x16": {
+      "price": 18.52,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/2-in-x-6-in-x-16-ft-2-Premium-Grade-SPF-Dimensional-Lumber-058447/312528849"
+    }
+  },
+  "Sheets": {
+    "7/16 OSB": {
+      "price": 14.55,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/OSB-7-16-Application-as-4ft-X-8-ft-Sheathing-Panel-386081/202106230?MERCH=REC-_-fbt_test-_-100055901-_-2-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "LP Smartside": {
+      "price": 48.82,
+      "sku": "509-095",
+      "url": "https://www.homedepot.com/p/LP-SmartSide-LP-SmartSide-Cedar-Texture-8-in-OC-Panel-Engineered-Treated-Wood-Siding-8-in-Application-as-3-8-in-x-4-ft-x-8-ft-27874/100055901"
+    },
+    "23/32 Advantch subfloor": {
+      "price": 59.75,
+      "sku": "439-058",
+      "url": "https://www.homedepot.com/p/Advantech-23-32-in-x-4-ft-x-8-ft-T-G-OSB-Underlayment-Panel-1012405/202084475"
+    },
+    "7/16 Zip System": {
+      "price": 40.2,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Huber-7-16-In-4-Ft-x-8-Ft-Zip-OSB-Wall-Sheathing-777198/202089190"
+    },
+    "Zip Tape 90ft": {
+      "price": 34.95,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/3-3-4-in-x-90-ft-ZIP-System-Tape-5017100/204836782"
+    },
+    "11/32 Ply": {
+      "price": 26.4,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Plytanium-11-32-in-x-4-ft-x-8-ft-Rtd-Southern-Yellow-Pine-Plywood-Sheathing-112590/100003677"
+    }
+  },
+  "Roofing": {
+    "Architectural Shingle": {
+      "price": 43.47,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/GAF-Timberline-Natural-Shadow-Charcoal-Algae-Resistant-Architectural-Shingles-33-33-sq-ft-per-Bundle-0601180/100658149"
+    },
+    "3 Tab Shingle": {
+      "price": 41.47,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/GAF-Royal-Sovereign-Charcoal-Algae-Resistant-3-Tab-Roofing-Shingles-33-33-sq-ft-per-Bundle-26-Pieces-0201180/100040028"
+    },
+    "Drip Edge 10ft": {
+      "price": 9.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Amerimax-Home-Products-F5M-x-10-ft-White-Aluminum-Drip-Edge-Flashing-5504600120/100017920"
+    },
+    "Ridge Vent 48in": {
+      "price": 12.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/GAF-Cobra-SnowCountry-11-5-in-x-48-in-Filtered-Plastic-Roof-Ridge-Exhaust-Vent-in-Black-2027000/100027903"
+    }
+  },
+  "Trims": {
+    "Drip 2.5 #100": {
+      "price": 15.39,
+      "sku": "",
+      "url": ""
+    },
+    "Drip 1.3 #101": {
+      "price": 9.58,
+      "sku": "",
+      "url": ""
+    },
+    "Res Rake #112": {
+      "price": 23.12,
+      "sku": "",
+      "url": ""
+    },
+    "Ridge #132": {
+      "price": 30.81,
+      "sku": "",
+      "url": ""
+    },
+    "4x1 Facia #150": {
+      "price": 17.24,
+      "sku": "",
+      "url": ""
+    },
+    "6x1 Facia #151": {
+      "price": 18.48,
+      "sku": "",
+      "url": ""
+    },
+    "Gambrel Flash #135": {
+      "price": 25.91,
+      "sku": "",
+      "url": ""
+    },
+    "Double Angle #142": {
+      "price": 10.27,
+      "sku": "",
+      "url": ""
+    },
+    "Mono Ridge #138": {
+      "price": 30.81,
+      "sku": "",
+      "url": ""
+    },
+    "J Channel #120": {
+      "price": 10.27,
+      "sku": "",
+      "url": ""
+    },
+    "Base Guard #143": {
+      "price": 11.56,
+      "sku": "",
+      "url": ""
+    },
+    "Rib Panel LFT": {
+      "price": 3.79,
+      "sku": "",
+      "url": ""
+    },
+    "IN Closure": {
+      "price": 0.99,
+      "sku": "",
+      "url": ""
+    },
+    "OUT Closure": {
+      "price": 1.19,
+      "sku": "",
+      "url": ""
+    },
+    "1 1/2 Screw": {
+      "price": 27.98,
+      "sku": "",
+      "url": ""
+    },
+    "3 Screw": {
+      "price": 4.88,
+      "sku": "",
+      "url": ""
+    }
+  },
+  "Hardware": {
+    "3in Galv Nails": {
+      "price": 99.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Paslode-3-in-x-0-120-Gauge-30-Degree-Galvanized-Ring-Shank-Paper-Tape-Framing-Nails-2000-per-Box-650385/100678208"
+    },
+    "2in Galv Nails": {
+      "price": 87.48,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Paslode-2-3-8-in-x-0-113-Gauge-30-Degree-Galvanized-Ring-Shank-Paper-Tape-Framing-Nails-2-000-per-Box-650383/100351707"
+    },
+    "Block 16x8x1.75in": {
+      "price": 1.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/16-in-x-8-in-x-1-75-in-Pewter-Concrete-Step-Stone-74000/202026920"
+    },
+    "Hinge 6in": {
+      "price": 8.27,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Everbilt-6-in-x-4-1-4-in-Standard-Black-Heavy-Duty-Decorative-Tee-Hinge-24442/327599345?MERCH=REC-_-brand_based_collection-_-327599234-_-5-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "Z Flashing": {
+      "price": 3.44,
+      "sku": "",
+      "url": ""
+    }
+  },
+  "Masonry": {
+    "Concrete 80lb": {
+      "price": 5.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Quikrete-80-lb-Concrete-Mix-110180/100318511"
+    },
+    "Concrete 60lb": {
+      "price": 4.48,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Quikrete-60-lb-Concrete-Mix-110160/100318478?MERCH=REC-_-fbt_test-_-206968441-_-3-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
+    },
+    "Rebar 10'": {
+      "price": 8.3,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/Weyerhaeuser-1-2-in-x-10-ft-4-Rebar-05366/202094293"
+    },
+    "Mesh 42x84 wire": {
+      "price": 23.88,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/42-in-x-84-in-Remesh-Sheet-5901028/206261747"
+    },
+    "10 Tube Form": {
+      "price": 14.48,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/SAKRETE-10-in-x-48-in-Concrete-Form-Tube-65470006/100350260"
+    }
+  },
+  "Skipped": {
+    "Fir": {
+      "2x10x20": {
+        "price": 69.69,
+        "sku": "707195",
+        "url": ""
+      },
+      "2x12x20": {
+        "price": 87.19,
+        "sku": "#103577",
+        "url": ""
+      }
+    }
+  }
+}

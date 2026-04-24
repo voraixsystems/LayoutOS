@@ -4,3 +4,5 @@ CLAUDE.md
 *.backup.html
 *.backup2.html
 shed-logic-backup*
+node_modules/
+package-lock.json

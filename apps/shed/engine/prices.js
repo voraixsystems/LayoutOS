@@ -6,8 +6,8 @@
 //   doors, windows) from prices.json at app init, with an inline
 //   fallback table for file:// or offline use.
 //
-// KEEP PRICES_FALLBACK IN SYNC with /prices.json — it is the
-//   safety net when fetch fails. Both should match exactly.
+// KEEP PRICES_FALLBACK IN SYNC with /data/shared/prices.json —
+//   it is the safety net when fetch fails. Both should match exactly.
 //
 // API:
 //   loadPrices()  — async. Call once on app init. Populates
@@ -17,9 +17,9 @@
 //                   Safe to call before loadPrices() resolves
 //                   (falls back to PRICES_FALLBACK).
 //
-// Depends on: shed/config.js (mutates CONFIG.ADDON_* on load).
-// Consumed by: shed/materials.js, shed/addons.js,
-//   shed/build-quote.js, shed-logic.js (facade).
+// Depends on: engine/config.js (mutates CONFIG.ADDON_* on load).
+// Consumed by: engine/materials.js, engine/addons.js,
+//   engine/build-quote.js, apps/shed/shed-logic.js (facade).
 // ============================================================
 
 import { CONFIG } from './config.js';
@@ -29,18 +29,18 @@ import { CONFIG } from './config.js';
 // ------------------------------------------------------------
 let PRICES = null;
 
-// Inline fallback prices (mirrors prices.json exactly — keep in sync)
+// Inline fallback prices (mirrors data/shared/prices.json exactly — keep in sync)
 // UPDATE 2026-04-16: osb price, zip prices, added metal_panel_per_lf, premium_plywood,
 //   man door variants, window variants. Old keys kept for backward compat.
 export const PRICES_FALLBACK = {
-  lp_smartside_sheet:    50.00,
+  lp_smartside_sheet:    48.82,
 
   osb_7_16_sheet:        13.00,  // UPDATE 2026-04-16: 14.55→13 (volatile — verify before quoting)
   osb_sheet:             13.00,  // canonical name going forward
 
-  zip_wall_sheet:        50.00,  // UPDATE 2026-04-18: 45→50
-  zip_roof_sheet:        60.00,  // UPDATE 2026-04-16: 52.36→60 — user uses green 7/16 for roof — verify before ordering brown 5/8
-  zip_tape_roll:         39.00,  // UPDATE 2026-04-18: 34.95→39
+  zip_wall_sheet:        40.20,  // MaterialPrices: 7/16 Zip System wall panel
+  zip_roof_sheet:        60.00,  // VERIFY — not in MaterialPrices separately; confirm before quoting
+  zip_tape_roll:         34.95,  // MaterialPrices: Zip Tape 90ft roll
 
   vapor_barrier_roll:   150.00,  // UPDATE 2026-04-18: 35→150
   felt_roll:             25.00,
@@ -51,8 +51,10 @@ export const PRICES_FALLBACK = {
 
   shingle_square:        43.47,
 
-  metal_panel_sqft:       3.79,  // legacy key
-  metal_panel_per_lf:     3.79,  // UPDATE 2026-04-16: canonical — 3ft wide panels, ordered to length
+  metal_panel_sqft:       3.29,  // legacy key — 29ga standard
+  metal_panel_per_lf:     3.29,  // 29ga standard — 3ft wide panels, ordered to length
+  metal_panel_29ga_per_lf: 3.29,
+  metal_panel_26ga_per_lf: 3.75,
 
   premium_plywood_sheet: 50.00,  // UPDATE 2026-04-16: added — 3/4in BC plywood for shelving
 
@@ -71,7 +73,7 @@ export const PRICES_FALLBACK = {
   garage_door_8x8_std:  2150.00,
   garage_door_9x7_std:   700.00,
   garage_door_9x7_r6:   1150.00,
-  garage_door_seal_9ft:   57.00,
+  garage_door_seal_9ft:   14.00,
   garage_door_keyed_handle: 50.00,
 
   framed_opening_8x7:    225.00,
@@ -86,13 +88,35 @@ export const PRICES_FALLBACK = {
 
   ice_water_shield_roll: 250.00,  // self-adhering 36in × 75ft roll (~225 sqft coverage)
   roofing_nail_box:       59.00,  // 30# coil/box roofing nails ~7200 count — 320 nails/square
+
+  // Framing lumber — SPF (2x4, 2x6) + Fir (2x8, 2x10) + PT skids
+  // SOURCE: MaterialPrices.json. Keys consumed by materials.js takeoff.
+  '4x4x16_pt':    27.98,
+  '2x4x8_spf':     3.85,
+  '2x4x10_spf':    5.74,
+  '2x4x12_spf':    7.07,
+  '2x4x16_spf':   10.83,
+  '2x6x8_spf':     8.15,
+  '2x6x10_spf':   11.62,
+  '2x6x12_spf':   12.34,
+  '2x6x16_spf':   18.52,
+  '2x8x8_spf':     9.63,
+  '2x8x10_spf':   12.17,
+  '2x8x12_spf':   14.42,
+  '2x8x16_spf':   19.28,
+  '2x10x8_spf':   14.55,
+  '2x10x10_spf':  18.33,
+  '2x10x12_spf':  21.96,
+  '2x10x16_spf':  32.63,
+  subfloor_sheet: 59.75,
+  drip_edge_10ft:  9.98,
 };
 
 // Call once on app init — tries fetch, falls back to inline.
 // Also sources add-on prices into CONFIG from the loaded price table.
 export async function loadPrices() {
   try {
-    const res = await fetch('./prices.json');
+    const res = await fetch('../../data/shared/prices.json');
     if (!res.ok) throw new Error('fetch failed');
     PRICES = await res.json();
   } catch (_) {

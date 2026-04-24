@@ -2,24 +2,14 @@
 // shed-quote/generate.js — Preview, Generate Modal & Quote Output
 // LayoutOS 2 — Fudd Service, Le Roy NY
 // ============================================================
-// PURPOSE: Quote preview rendering and generate modal flow.
-//   - rebuildPreview: live quote preview on step 11
-//   - renderPreview / renderMarginView / buildOverrideList: internal mode panels
-//   - Manual line items (internal mode)
-//   - Unified generate modal: open, confirm, close, suffix toggles
-//
-// Imports: state from core.js; shed-logic.js; layoutos-core.js
-// Cross-module: calls window.goStep, window.showStepError (core.js);
-//   window.renderFramingPanel, window.refreshDevFlags, window.renderDevMarginView (internal.js)
-// ============================================================
 
 import { state } from './core.js';
 import {
   buildQuote, formatMoney, CONFIG, ANCHOR, getPrices,
 } from '../shed-logic.js';
 import {
-  getNextEstimateNumber, incrementEstimateCounter, logQuote,
-} from '../layoutos-core.js';
+  getNextEstimateNumber, incrementEstimateCounter, logQuote, formatRevisionNumber,
+} from '../../../core/layoutos-core.js';
 
 // ── Step 11: Preview ─────────────────────────────────────
 function rebuildPreview() {
@@ -349,7 +339,7 @@ window.confirmGenModal = function() {
 
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(quote))));
   localStorage.setItem('layoutos_current_quote', JSON.stringify(quote));
-  window.open(`shed-output.html?q=${encoded}`, '_blank');
+  window.open(`../../core/proposal.html?q=${encoded}`, '_blank');
 };
 
 // Backdrop click closes modal
@@ -359,10 +349,18 @@ document.getElementById('gen-modal-backdrop').addEventListener('click', (e) => {
 
 // ── Helpers ───────────────────────────────────────────────
 function resolveEstimateLetter() {
-  const name = state.customer.name || '';
-  return name ? name[0].toUpperCase() : 'X';
+  return CONFIG.PREPARER_LETTER || 'F';
 }
 
+// ── Revision suffix helper ────────────────────────────────
+window.applyRevisionSuffix = function() {
+  const base = document.getElementById('gen-estnum')?.value?.trim();
+  const rev  = parseInt(document.getElementById('gen-revision')?.value) || 0;
+  if (!base) return;
+  const stripped = base.replace(/\.\d+(-\d{2})$/, '$1');
+  document.getElementById('gen-estnum').value = formatRevisionNumber(stripped, rev);
+};
+
 // ── Expose for cross-module calls ─────────────────────────
-window.rebuildPreview       = rebuildPreview;
+window.rebuildPreview        = rebuildPreview;
 window.resolveEstimateLetter = resolveEstimateLetter;

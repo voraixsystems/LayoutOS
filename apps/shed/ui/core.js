@@ -2,14 +2,6 @@
 // shed-quote/core.js — State, Navigation & Initialization
 // LayoutOS 2 — Fudd Service, Le Roy NY
 // ============================================================
-// PURPOSE: App state, step navigation, progress bar, style grid,
-//   step validation, keyboard listeners, and app initialization.
-//
-// Exports: state (live object — sub-modules mutate it directly)
-// Side-effect imports: steps, builders, generate, internal
-//   (load them so their window.* bindings register before any
-//    user interaction fires)
-// ============================================================
 
 import {
   getNextEstimateNumber,
@@ -17,7 +9,7 @@ import {
   logQuote,
   formatCurrency,
   formatDate,
-} from '../layoutos-core.js';
+} from '../../../core/layoutos-core.js';
 
 import {
   CONFIG, ANCHOR, loadPrices, getPrices,
@@ -30,7 +22,7 @@ import {
   formatMoney, getStyleList, getValidWidths, getValidLengths,
 } from '../shed-logic.js';
 
-import { isStepVisible, nextVisibleStep, TOTAL_STEPS } from '../shed/step-visibility.js';
+import { isStepVisible, nextVisibleStep, TOTAL_STEPS } from '../engine/step-visibility.js';
 
 // Side-effect imports — register window.* bindings
 import './steps.js';
@@ -56,6 +48,12 @@ export const state = {
   devMode: false,
   internalNotes: '',
   roofSheathingOption: 'none',
+  carriageVariant: 'carriage', // 'carriage'|'classic' — only used when style === 'carriage'
+  roofColor: null,
+  roofColorLabel: '',
+  roofColorPremium: false,
+  roofColorTier: 'base',    // 'base'|'crinkle'
+  roofGauge: '29',          // '29'|'26'
   wallSheathingOption: 'none',
   manDoorItems: [],
   windowItems: [],
@@ -168,6 +166,8 @@ function buildStyleGrid() {
       state.style = s.key;
       clearStepError(1);
       window.populateSizeDropdowns();
+      const cvp = document.getElementById('carriage-variant-picker');
+      if (cvp) cvp.style.display = s.key === 'carriage' ? 'block' : 'none';
       if (state.internalMode) window.renderFramingPanel();
     });
     grid.appendChild(card);

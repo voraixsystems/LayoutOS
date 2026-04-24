@@ -142,6 +142,16 @@ export function formatDate(date) {
   });
 }
 
+// Returns a revision-suffixed estimate number.
+// formatRevisionNumber('F16-26', 1) → 'F16.1-26'
+// formatRevisionNumber('F16-26', 0) → 'F16-26'
+export function formatRevisionNumber(baseNumber, revision) {
+  if (!revision || revision <= 0) return baseNumber;
+  const match = baseNumber.match(/^(.+)-(\d{2})$/);
+  if (!match) return `${baseNumber}.${revision}`;
+  return `${match[1]}.${revision}-${match[2]}`;
+}
+
 // Returns a normalized header object for any output page.
 // businessInfo  — { name, tagline, address, city, email, phone, website }
 // customerInfo  — { name, address, email, phone }

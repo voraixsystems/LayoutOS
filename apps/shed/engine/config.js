@@ -37,12 +37,20 @@ export const CONFIG = {
 
   // Payment
   PAYMENT_STANDARD: '50% deposit required to schedule. Balance due upon completion.',
-  PAYMENT_LARGE_THRESHOLD: 15000,       // flag 3-tier payment above this
+  PAYMENT_LARGE_THRESHOLD: 15000,       // milestone payment schedule above this
   PAYMENT_LARGE_NOTE: 'Payment schedule to be discussed for projects over $15,000.',
+  // Milestone percentages for large projects — rendered in shed-output.html
+  // Labels map to build status checkpoints; amounts calculated from total at render time
+  PAYMENT_MILESTONES: [
+    { label: 'Deposit — due at signing',       pct: 0.33 },
+    { label: 'Progress — delivery / rough-in', pct: 0.34 },
+    { label: 'Balance — due at completion',    pct: 0.33 },
+  ],
 
   // Estimate numbering — keys and counter logic live in layoutos-core.js
-  // Format: [first-letter-of-customer-first-name][counter]-[2-digit-year]
-  // e.g. F28-26 for customer "Frank", estimate #28, year 2026
+  // Format: [PREPARER_LETTER][counter]-[2-digit-year]
+  // e.g. F28-26 = Fudd Service estimate #28, year 2026
+  PREPARER_LETTER: 'F',  // F = Fudd Service — change if another preparer takes over
 
   // Internal mode unlock code
   INTERNAL_UNLOCK: 'LAYOUT',
@@ -231,6 +239,63 @@ export const CONFIG = {
     '16x7':   { label: '16×7', priceKey: 'framed_opening_16x7', wallHeightMin: 8,  openingSqft: 112, lbwNote: true  },
     'custom': { label: 'Custom', priceKey: null,                 wallHeightMin: 8,  openingSqft: 56,  lbwNote: false },
   },
+
+  // ── Metal roofing colors ────────────────────────────────
+  // gauge26: true = available in 26ga (others are 29ga standard)
+  // premium: true = slight upcharge (crinkle/matte finish)
+  METAL_PREMIUM_BASE_PER_LF:    2.99,  // per panel-LF upcharge — bare/matte premium colors
+  METAL_PREMIUM_CRINKLE_PER_LF: 3.75, // per panel-LF upcharge — crinkle finish colors
+
+  METAL_COLORS_STANDARD: [
+    { key: 'stealth_black',   label: 'Stealth Black',   hex: '#1c1c1c', gauge26: true  },
+    { key: 'zinc_gray',       label: 'Zinc Gray',       hex: '#8a9099'                 },
+    { key: 'burnished_slate', label: 'Burnished Slate', hex: '#52484a', gauge26: true  },
+    { key: 'coca_brown',      label: 'Coca Brown',      hex: '#5c3d2e'                 },
+    { key: 'charcoal',        label: 'Charcoal',        hex: '#4a4a4a', gauge26: true  },
+    { key: 'forest_green',    label: 'Forest Green',    hex: '#2d5a27', gauge26: true  },
+    { key: 'burgundy',        label: 'Burgundy',        hex: '#6b1f2a'                 },
+    { key: 'rustic_red',      label: 'Rustic Red',      hex: '#8b3a3a'                 },
+    { key: 'bright_red',      label: 'Bright Red',      hex: '#cc2200'                 },
+    { key: 'hawaiian_blue',   label: 'Hawaiian Blue',   hex: '#1a6b9a'                 },
+    { key: 'ash_gray',        label: 'Ash Gray',        hex: '#9ba5a8', gauge26: true  },
+    { key: 'sahara_tan',      label: 'Sahara Tan',      hex: '#c4a96b'                 },
+    { key: 'clay',            label: 'Clay',            hex: '#9e8a72'                 },
+    { key: 'light_stone',     label: 'Light Stone',     hex: '#d4c9a8'                 },
+    { key: 'polar_white',     label: 'Polar White',     hex: '#f0eeea', gauge26: true  },
+    { key: 'gallery_blue',    label: 'Gallery Blue',    hex: '#4a6fa8'                 },
+  ],
+
+  METAL_COLORS_PREMIUM: [
+    { key: 'bare_galv',               label: 'Bare Galv',               hex: '#bcc4c8', premium: true, premiumTier: 'base'    },
+    { key: 'matte_black',             label: 'Matte Black',             hex: '#0d0d0d', premium: true, premiumTier: 'base'    },
+    { key: 'crinkle_black',           label: 'Crinkle Black',           hex: '#111111', premium: true, premiumTier: 'crinkle' },
+    { key: 'crinkle_burnished_slate', label: 'Crinkle Burnished Slate', hex: '#4a4042', premium: true, premiumTier: 'crinkle' },
+    { key: 'crinkle_charcoal',        label: 'Crinkle Charcoal',        hex: '#2d2d2d', premium: true, premiumTier: 'crinkle' },
+  ],
+
+  // Shingle colors — GAF Timberline HD stocked colors. Others available by order.
+  // Swatches are approximate — view physical samples before spec'ing.
+  SHINGLE_COLORS: [
+    { key: 'hickory',         label: 'Hickory',         hex: '#5e3d1e' },
+    { key: 'barkwood',        label: 'Barkwood',        hex: '#3d2a14' },
+    { key: 'charcoal',        label: 'Charcoal',        hex: '#111111' },
+    { key: 'fox_hollow_gray', label: 'Fox Hollow Gray', hex: '#c0bbb4' },
+    { key: 'oyster_gray',     label: 'Oyster Gray',     hex: '#9d9388' },
+    { key: 'pewter_gray',     label: 'Pewter Gray',     hex: '#7d8087' },
+    { key: 'shakewood',       label: 'Shakewood',       hex: '#6b5040' },
+    { key: 'slate',           label: 'Slate',           hex: '#5a6570' },
+    { key: 'weathered_wood',  label: 'Weathered Wood',  hex: '#7a7060' },
+  ],
+
+  // ── Estimate base notes — edit freely ───────────────────
+  // These print on every estimate. Wipe and rewrite as needed.
+  // Dynamic notes (metal condensation, loft, garage door warnings) are
+  // added automatically in build-quote.js and are NOT in this array.
+  ESTIMATE_NOTES_BASE: [
+    'These numbers are subject to change based on location, supplies, equipment, rentals, and the unforeseen.',
+    'Delivery included within 75 miles of Le Roy NY.',
+    'Roof pitch: 5/12 standard. Non-standard pitch is available by request.',
+  ],
 
   // Footer — LayoutOS — built by Fudd
   FOOTER_TAG: 'LayoutOS — built by Fudd',

@@ -2,15 +2,6 @@
 // shed-quote/internal.js — Framing Panel & Dev Mode
 // LayoutOS 2 — Fudd Service, Le Roy NY
 // ============================================================
-// PURPOSE: Internal-mode framing takeoff panel and dev flag system.
-//   - renderFramingPanel: material + cost breakdown from calculateFraming
-//   - activateDevMode / DEV_FLAGS: dev flag panel with notes
-//   - renderDevMarginView: margin table in dev mode
-//
-// Imports: state from core.js; calculateFraming, formatMoney, getPrices from shed-logic.js
-// Cross-module: calls window.rebuildPreview (generate.js) from activateDevMode
-// Consumed by: core.js keydown listener; steps.js updateSizeInfo (via window.renderFramingPanel)
-// ============================================================
 
 import { state } from './core.js';
 import { calculateFraming, calculateMaterials, calculateMetalPanels, formatMoney, getPrices, ANCHOR, CONFIG } from '../shed-logic.js';
@@ -66,11 +57,8 @@ window.renderFramingPanel = function() {
   const m  = calculateMaterials(state.width, state.length, state.wallHeight, state.style);
   const fm = n => `$${Math.round(n).toLocaleString()}`;
 
-  // Whether wood floor is excluded (slab + no-wood-floor selected)
   const noFloor = !!(state.slab?.enabled && state.slab?.noWoodFloor);
 
-  // 5-column row: item | size/spec | qty | unit $ | total
-  // Pass excluded=true to shadow the row (slab/no-wood-floor)
   const row = (item, size, qty, unitPrice, excluded = false) => {
     const total = qty * unitPrice;
     const cls   = excluded ? ' fp-excluded' : '';
@@ -96,7 +84,6 @@ window.renderFramingPanel = function() {
 
   const { floor: fl, walls: wa, roof: ro, sheathing: sh } = fr;
 
-  // ── Building header ──────────────────────────────────────
   let html = `<div class="fp-building-header">
     <strong>${ANCHOR[state.style]?.label || state.style}</strong>
     &nbsp;${state.width}×${state.length}ft · ${state.wallHeight}ft walls
@@ -126,7 +113,7 @@ window.renderFramingPanel = function() {
   }
   html += `</div>`;
 
-  // ── WALLS — framing + wall cladding ──────────────────────
+  // ── WALLS ────────────────────────────────────────────────
   let wallCladdingCost = 0;
   html += `<div class="fp-section"><div class="fp-section-title">Walls</div>`;
   html += header();
@@ -134,7 +121,6 @@ window.renderFramingPanel = function() {
     p[wa.studKey] || Math.round(wa.studCost / wa.totalStuds));
   html += row('Plates', `${fmtKey(wa.plateKey)} 3× perim`, wa.platePcs,
     p[wa.plateKey] || Math.round(wa.plateCost / wa.platePcs));
-  // Wall cladding
   const gdOpenSqft = getGdOpeningsSqft();
   const gdDeducted = gdOpenSqft > 0 ? Math.floor(gdOpenSqft / (CONFIG.SHEET_SQFT || 32)) : 0;
   if (sh.sidingType === 'lp') {
@@ -173,13 +159,12 @@ window.renderFramingPanel = function() {
   html += sub('Walls Total', wa.wallTotal + wallCladdingCost);
   html += `</div>`;
 
-  // ── ROOF — framing + sheathing + finish, all in one ──────
+  // ── ROOF ─────────────────────────────────────────────────
   let roofSheathCost  = 0;
   let roofFinishCost  = 0;
   html += `<div class="fp-section"><div class="fp-section-title">Roof</div>`;
   html += header();
 
-  // Framing
   html += row('Rafters', fmtKey(ro.rafterKey), ro.totalRafters,
     p[ro.rafterKey] || Math.round(ro.rafterCost / ro.totalRafters));
   if (ro.ridgePcs > 0) {
@@ -199,7 +184,6 @@ window.renderFramingPanel = function() {
   }
   html += row('Drip edge', '10ft sticks', ro.dripSticks, p.drip_edge_10ft || 9.98);
 
-  // Roof sheathing
   if (sh.effectiveOsbRoof > 0) {
     const c = sh.effectiveOsbRoof * (p.osb_sheet || 13);
     html += row('OSB roof', '7/16" 4×8', sh.effectiveOsbRoof, p.osb_sheet || 13);
@@ -224,7 +208,6 @@ window.renderFramingPanel = function() {
     roofSheathCost += c;
   }
 
-  // Roofing finish
   if (state.roof === 'shingle') {
     const NAILS_PER_BOX    = 7200;
     const NAILS_PER_SQUARE = 320;
@@ -237,9 +220,8 @@ window.renderFramingPanel = function() {
   }
   if (state.roof === 'metal') {
     const mp     = calculateMetalPanels(m, state.wallHeight);
-    const perLf  = p.metal_panel_per_lf || 3.79;
+    const perLf  = p.metal_panel_per_lf || 3.29;
     const cutLen = mp.roofPanelCutLen;
-    // Price per panel = cut length × $/lf (cut-to-length ordering)
     const perPanel  = Math.round(cutLen * perLf * 10) / 10;
     const totalCost = Math.round(mp.roofPanelCount * perPanel);
     html += row('Metal panels — roof', `${cutLen}ft cut × 3ft`, mp.roofPanelCount, perPanel);

@@ -125,4 +125,13 @@ export const ANCHOR = {
       '16x32':25600,'16x36':27850,'16x40':30825,
     },
   },
+  hip: {
+    label: 'Deluxe Hip',
+    description: 'Hip-roof variant. Symmetric 12in overhang on all four sides. Priced as Deluxe.',
+    overhangKey: 'OVERHANG_DELUXE',
+    widthRange: [8, 20],
+    lengthRange: [8, 40],
+    priceAlias: 'deluxe',
+    base_prices: {},
+  },
 };

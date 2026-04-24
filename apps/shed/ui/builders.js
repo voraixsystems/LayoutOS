@@ -2,12 +2,6 @@
 // shed-quote/builders.js — Door & Window Row Builders
 // LayoutOS 2 — Fudd Service, Le Roy NY
 // ============================================================
-// PURPOSE: Typed builder UI for man doors and windows.
-//   Renders item rows into #man-door-builder and #window-builder.
-//
-// Imports: state from core.js; CONFIG + formatMoney from shed-logic.js
-// Consumed by: HTML inline onclick handlers (via window.*)
-// ============================================================
 
 import { state } from './core.js';
 import { CONFIG, formatMoney, getPrices } from '../shed-logic.js';
@@ -244,7 +238,7 @@ window.updateGarageDoorRow = function(idx) {
 
 window.renderGarageDoorBuilder = renderGarageDoorBuilder;
 
-// Delegated remove handler — survives innerHTML rebuilds on all three builder containers
+// Delegated remove handler
 document.addEventListener('click', e => {
   const btn = e.target.closest('[data-remove-type]');
   if (!btn) return;

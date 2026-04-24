@@ -1,0 +1,35 @@
+{
+  "_comment": "LayoutOS price history — last 2 prices per key, newest first. Managed by index.js.",
+  "osb_sheet": [
+    {
+      "price": 14.55,
+      "date": "2026-04-16"
+    },
+    {
+      "price": 13,
+      "date": "2026-04-18"
+    }
+  ],
+  "zip_wall_sheet": [
+    {
+      "price": 48.5,
+      "date": "2026-04-24"
+    },
+    {
+      "price": 40.2,
+      "date": "2026-04-24"
+    }
+  ],
+  "zip_roof_sheet": [
+    {
+      "price": 52.36,
+      "date": "2026-04-16"
+    }
+  ],
+  "lp_smartside_sheet": [
+    {
+      "price": 48.82,
+      "date": "2026-04-24"
+    }
+  ]
+}

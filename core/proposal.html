@@ -99,30 +99,31 @@ body {
   font-family: 'Courier New', monospace;
 }
 
-/* ── TO block ─────────────────────────────────────────── */
-.to-block {
-  margin-bottom: 22px;
+/* ── Info block — two-column: TO/PROJECT left, NOTES right ── */
+.info-block {
   display: flex;
-  gap: 40px;
+  gap: 36px;
+  margin-bottom: 20px;
+  align-items: flex-start;
 }
-.to-section { flex: 1; }
-.to-section .to-label {
+.info-left  { flex: 1; }
+.info-right { flex: 1; font-size: 12px; color: #374151; line-height: 1.65; }
+.info-label {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #9ca3af;
-  margin-bottom: 5px;
+  color: #1d4ed8;
+  margin-bottom: 4px;
 }
-.to-section .to-content {
+.info-left .info-label + * { margin-bottom: 12px; }
+.info-content {
   font-size: 13px;
   line-height: 1.7;
   color: #111;
+  margin-bottom: 14px;
 }
-.to-section .to-content strong {
-  font-size: 14px;
-  font-weight: 700;
-}
+.info-content strong { font-size: 14px; font-weight: 700; }
 
 /* ── Line items table ─────────────────────────────────── */
 .line-table {
@@ -166,15 +167,17 @@ body {
 
 /* Section divider row in table */
 .line-table .section-row td {
-  background: #f3f4f6;
-  font-size: 10px;
+  background: transparent;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #6b7280;
-  padding: 5px 10px;
-  border-bottom: 1px solid #d1d5db;
+  color: #1d4ed8;
+  padding: 10px 10px 4px;
+  border-bottom: none;
+  border-top: 1px solid #e5e7eb;
 }
+.line-table tbody tr:first-child.section-row td { border-top: none; }
 
 /* ── Totals block ─────────────────────────────────────── */
 .totals-block {
@@ -199,26 +202,14 @@ body {
 .totals-block .total-label { width: 70%; }
 .totals-block .total-amount { text-align: right; }
 
-/* ── Notes section ────────────────────────────────────── */
-.notes-section {
-  margin-top: 20px;
-  padding: 14px 16px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
+/* ── Milestone payment rows ───────────────────────────── */
+.milestone-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
   font-size: 12px;
-  color: #374151;
-  line-height: 1.7;
+  color: #1e40af;
 }
-.notes-section .notes-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #9ca3af;
-  margin-bottom: 6px;
-}
-.notes-section p { margin-bottom: 4px; }
 
 /* ── Payment terms ────────────────────────────────────── */
 .payment-block {
@@ -294,7 +285,6 @@ body {
   #page     { box-shadow: none; padding: 32px 40px; max-width: 100%; }
   #load-error { display: none !important; }
 
-  /* Prevent table rows splitting across pages awkwardly */
   .line-table tbody tr { page-break-inside: avoid; }
   .notes-section { page-break-inside: avoid; }
 
@@ -331,7 +321,6 @@ import { formatCurrency, formatDate, formatEstimateHeader } from './layoutos-cor
 
 // ── Load quote from URL param or localStorage ────────────
 function loadQuote() {
-  // Try URL param first (?q=base64)
   try {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get('q');
@@ -340,7 +329,6 @@ function loadQuote() {
     }
   } catch (_) {}
 
-  // Fallback to localStorage
   try {
     const stored = localStorage.getItem('layoutos_current_quote');
     if (stored) return JSON.parse(stored);
@@ -349,16 +337,12 @@ function loadQuote() {
   return null;
 }
 
-// ── Format helpers ───────────────────────────────────────
-// formatCurrency imported from layoutos-core.js
-
 function escHtml(s) {
   if (!s) return '';
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// Fallback company info for quotes generated before Pass 2
-// (quotes built after Pass 2 embed company info in q.company)
+// Fallback company info for quotes generated before company info was embedded
 const FUDD_COMPANY = {
   name:    'Fudd Service',
   tagline: 'Exterior Construction Services',
@@ -377,8 +361,6 @@ function render(q) {
   const b = q.building  || {};
   const p = q.pricing   || {};
 
-  // Build normalized header via core helper
-  // Falls back to FUDD_COMPANY for quotes that predate Pass 2
   const h = formatEstimateHeader(
     q.company || FUDD_COMPANY,
     q.customer || {},
@@ -409,56 +391,43 @@ function render(q) {
     </div>
   `;
 
-  // ── TO block ────────────────────────────────────────────
+  // ── Two-column info block ─────────────────────────────
   const c = h.customer;
+
+  const projectLines = [];
+  if (q.projectDesc) projectLines.push(escHtml(q.projectDesc).replace(/\n/g, '<br>'));
+  if (b.style) {
+    if (q.projectDesc) projectLines.push('');
+    projectLines.push(`<strong>${escHtml(styleLabel(b.style))} — ${b.width}×${b.length}ft</strong>`);
+    projectLines.push(`${b.sqft} sqft &nbsp;|&nbsp; ${b.wallHeight}ft walls`);
+    projectLines.push((b.roof === 'metal' ? 'Metal R-Panel roof' : 'Architectural shingle roof') + ` &nbsp;|&nbsp; ${b.siding === 'vinyl' ? 'Vinyl siding' : 'LP SmartSide siding'}`);
+    if ((b.conditioningLevel || 0) > 0) projectLines.push('Conditioning: Level ' + b.conditioningLevel);
+  }
+
+  const notesHtml = (q.autoNotes && q.autoNotes.length)
+    ? q.autoNotes.map(n => `<p style="margin-bottom:4px">• ${escHtml(n)}</p>`).join('')
+    : '<p>&nbsp;</p>';
+
   html += `
-    <div class="to-block">
-      <div class="to-section">
-        <div class="to-label">To</div>
-        <div class="to-content">
+    <div class="info-block">
+      <div class="info-left">
+        <div class="info-label">To</div>
+        <div class="info-content">
           <strong>${escHtml(c.name) || '—'}</strong><br>
           ${c.address ? escHtml(c.address) + '<br>' : ''}
-          ${c.email   ? escHtml(c.email)   + '<br>' : ''}
-          ${c.phone   ? escHtml(c.phone)         : ''}
+          ${(c.email || c.phone) ? [c.email, c.phone].filter(Boolean).map(escHtml).join(' | ') : ''}
+        </div>
+        <div class="info-label">Project</div>
+        <div class="info-content" style="margin-bottom:0">
+          ${projectLines.length ? projectLines.join('<br>') : '&nbsp;'}
         </div>
       </div>
-      <div class="to-section">
-        <div class="to-label">Project</div>
-        <div class="to-content">
-          ${(() => {
-            const lines = [];
-            // Free-text description (from quick draft) — preserves line breaks
-            if (q.projectDesc) {
-              lines.push(escHtml(q.projectDesc).replace(/\n/g, '<br>'));
-            }
-            // Shed spec — only shown when a style was actually selected
-            if (b.style) {
-              if (q.projectDesc) lines.push(''); // visual spacer
-              lines.push(`${escHtml(styleLabel(b.style))} — ${b.width}×${b.length}ft`);
-              lines.push(`${b.sqft} sqft &nbsp;|&nbsp; ${b.wallHeight}ft walls`);
-              lines.push((b.roof === 'metal' ? 'Metal R-Panel roof' : 'Architectural shingle roof') + ` &nbsp;|&nbsp; ${b.roofPitch || '5/12'} pitch`);
-              lines.push(b.siding === 'vinyl' ? 'Vinyl siding' : 'LP SmartSide siding');
-              if ((b.conditioningLevel || 0) > 0)
-                lines.push('Conditioning: Level ' + b.conditioningLevel);
-            }
-            return lines.length ? lines.join('<br>') : '&nbsp;';
-          })()}
-        </div>
+      <div class="info-right">
+        <div class="info-label">Notes</div>
+        ${notesHtml}
       </div>
     </div>
   `;
-
-  // ── Notes field (pre-table) ──────────────────────────────
-  html += `
-    <div class="notes-section" style="margin-bottom:14px">
-      <div class="notes-title">Notes</div>
-  `;
-  if (q.autoNotes && q.autoNotes.length) {
-    q.autoNotes.forEach(n => { html += `<p>• ${escHtml(n)}</p>`; });
-  } else {
-    html += `<p>&nbsp;</p>`;
-  }
-  html += `</div>`;
 
   // ── Line items table ─────────────────────────────────────
   html += `
@@ -474,7 +443,6 @@ function render(q) {
       <tbody>
   `;
 
-  // Group into sections for readability
   const groups = groupLineItems(q.lineItems, !!q._internalMode);
 
   groups.forEach(group => {
@@ -491,7 +459,6 @@ function render(q) {
         : (item.qty > 1 || (q._internalMode && item.isConditioning))
           ? formatCurrency(item.unitPrice)
           : '';
-      // Sheathing items: strip parenthetical material counts from customer-facing description
       const desc = (item.isRoofSheathing || item.isWallSheathing)
         ? item.description.replace(/\s+\(\d+\s+(?:rolls?|sheets?|LF)\)/g, '')
         : item.description;
@@ -528,16 +495,26 @@ function render(q) {
     </table>
   `;
 
-  // ── Payment terms — omitted if paymentNote is explicitly blank ──
+  // ── Payment terms ─────────────────────────────────────────
   const payNote = q.paymentNote !== undefined ? q.paymentNote
     : '50% deposit required to schedule. Balance due upon completion.';
+  const grandTotal = q.manualPrice > 0 ? q.manualPrice : (p.total || 0);
+  const showMilestones = grandTotal >= 15000;
   if (payNote) {
-    html += `
-      <div class="payment-block">
-        <strong>Payment Terms</strong>
-        ${escHtml(payNote)}
-      </div>
-    `;
+    html += `<div class="payment-block"><strong>Payment Terms</strong>`;
+    if (showMilestones) {
+      const milestones = [
+        { label: 'Deposit — due at signing',          pct: 0.33 },
+        { label: 'Progress — delivery / rough-in',    pct: 0.34 },
+        { label: 'Balance — due at completion',        pct: 0.33 },
+      ];
+      milestones.forEach(m => {
+        html += `<div class="milestone-row"><span>${m.label}</span><span>${formatCurrency(Math.round(grandTotal * m.pct))}</span></div>`;
+      });
+    } else {
+      html += ` ${escHtml(payNote)}`;
+    }
+    html += `</div>`;
   }
 
   // ── Point of contact ─────────────────────────────────────
@@ -569,9 +546,6 @@ function render(q) {
 function groupLineItems(items, isInternal) {
   if (!items || !items.length) return [];
 
-  // Client mode: merge rollIntoBase items into the base line, then drop
-  // any isInternalOnly items from display. Total stays correct because
-  // the base line absorbs their value.  UPDATE 2026-04-17.
   let working = items;
   if (!isInternal) {
     const rollUpTotal = items
@@ -595,9 +569,10 @@ function groupLineItems(items, isInternal) {
   const upgrades   = working.filter(i =>
     !i.isBase &&
     !i.isRoofSheathing && !i.isWallSheathing &&
-    i.id !== 'demo' && !i.isManual && i.id !== 'slab' && i.id !== 'no_floor'
+    i.id !== 'demo' && i.id !== 'demo_concrete' &&
+    !i.isManual && i.id !== 'slab' && i.id !== 'no_floor'
   );
-  const demoItems  = working.filter(i => i.id === 'demo');
+  const demoItems  = working.filter(i => i.id === 'demo' || i.id === 'demo_concrete');
   const manuals    = working.filter(i => i.isManual);
 
   if (base.length)       groups.push({ label: 'Base Shed Package',          items: base });
@@ -610,11 +585,12 @@ function groupLineItems(items, isInternal) {
   return groups;
 }
 
-// ── Style label lookup (no module available here) ────────
+// ── Style label lookup ────────────────────────────────────
 const STYLE_LABELS = {
   economy: 'Economy Gable', deluxe: 'Deluxe Gable',
-  carriage: 'Carriage / Eco', mini: 'Mini Barn',
+  carriage: 'Carriage / Classic', mini: 'Mini Barn',
   low: 'Low Barn', maxi: 'Maxi Barn', double: 'Double Decker',
+  hip: 'Deluxe Hip',
 };
 function styleLabel(key) {
   return STYLE_LABELS[key] || key || 'Custom';

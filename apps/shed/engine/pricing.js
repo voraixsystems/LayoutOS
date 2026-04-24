@@ -70,7 +70,12 @@ export function getBasePrice(styleKey, width, length) {
     effectiveStyle = 'double';
   }
 
-  const style = ANCHOR[effectiveStyle];
+  const styleData = ANCHOR[effectiveStyle];
+  if (!styleData) return 0;
+
+  // Resolve price alias (e.g. hip → deluxe)
+  const pricingKey = styleData.priceAlias || effectiveStyle;
+  const style = ANCHOR[pricingKey];
   if (!style) return 0;
 
   const sqft = width * length;

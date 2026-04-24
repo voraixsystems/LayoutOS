@@ -2,14 +2,6 @@
 // shed-quote/steps.js — Per-Step Handlers & Size Dropdowns
 // LayoutOS 2 — Fudd Service, Le Roy NY
 // ============================================================
-// PURPOSE: All step-specific user interaction handlers.
-//   Steps 2–10: size, wall height, roof, siding, conditioning,
-//   add-ons, demo, and customer name.
-//
-// Imports: state from core.js; shed-logic.js functions; getNextEstimateNumber from layoutos-core.js
-// Cross-module: calls window.renderFramingPanel (internal.js) from updateSizeInfo
-// Consumed by: HTML inline onclick handlers (via window.*) + core.js buildStyleGrid
-// ============================================================
 
 import { state } from './core.js';
 import {
@@ -17,7 +9,7 @@ import {
   calculateShelving, getLoftAvailability, formatMoney,
   getValidWidths, getValidLengths, calculateMaterials, getPrices,
 } from '../shed-logic.js';
-import { getNextEstimateNumber } from '../layoutos-core.js';
+import { getNextEstimateNumber } from '../../../core/layoutos-core.js';
 
 // ── Step 2: Size dropdowns ───────────────────────────────
 function populateSizeDropdowns() {
@@ -53,22 +45,17 @@ function updateSizeInfo() {
   info.style.display = 'block';
   info.textContent   = `${state.width}×${state.length}ft — ${sqft} sqft — Base price: ${formatMoney(price)}`;
 
-  // Vinyl preview on step 5
   const va = calculateVinylAddon(sqft);
   document.getElementById('vinyl-price-preview').textContent = `+${formatMoney(va)}`;
 
-  // Re-resolve stud size if 10ft wall is already selected
   if (state.wallHeight === 10) {
     state.wallStudSize = resolveStudSize(10, state.width);
   }
 
-  // Update loft availability note on step 7
   updateLoftAvailability();
 
-  // Update framing panel in internal mode
   if (state.internalMode) window.renderFramingPanel();
 
-  // Keep wall height preview live as size changes
   updateWallHeightPreview();
 }
 
@@ -99,7 +86,6 @@ function updateLoftAvailability() {
 }
 
 // ── Stud size resolver ───────────────────────────────────
-// 10ft wall: 2x4x10 is fine up to 10ft wide; 12ft+ width needs 2x6x10
 function resolveStudSize(wallHeight, width) {
   if (wallHeight !== 10) return '2x4x8';
   return (width >= 12) ? '2x6x10' : '2x4x10';
@@ -133,10 +119,8 @@ function updateWallHeightPreview() {
   const roofPrice  = p.shingle_square        || 43.47;
   const approxCost = Math.round((extraLP * lpPrice) + (extraRoof * (roofPrice / 100) * 32));
 
-  // Client mode: clean label
   el.textContent = `+${extraLP} LP sheets · 2×6 studs`;
 
-  // Internal mode: full breakdown panel
   if (state.internalMode) {
     el.innerHTML = `
       <div style="font-size:12px;line-height:1.7;text-align:left;padding:4px 0">
@@ -150,6 +134,14 @@ function updateWallHeightPreview() {
       </div>`;
   }
 }
+
+// ── Step 1: Carriage variant sub-selector ────────────────
+window.selectCarriageVariant = function(v) {
+  state.carriageVariant = v;
+  document.querySelectorAll('.cv-btn').forEach(el => {
+    el.classList.toggle('selected', el.dataset.variant === v);
+  });
+};
 
 // ── Step 4: Roof ─────────────────────────────────────────
 window.selectRoof = function(r) {
@@ -171,6 +163,12 @@ window.selectRoof = function(r) {
 
   const mro = document.getElementById('metal-roof-options');
   if (mro) mro.style.display = r === 'metal' ? 'block' : 'none';
+
+  const mco = document.getElementById('metal-color-options');
+  if (mco) mco.style.display = r === 'metal' ? 'block' : 'none';
+
+  const sco = document.getElementById('shingle-color-options');
+  if (sco) sco.style.display = r === 'shingle' ? 'block' : 'none';
 
   if (r !== 'metal') {
     state.roofSheathingOption = 'none';
@@ -194,6 +192,31 @@ window.selectRoofSheathing = function(option) {
     el.querySelector('input').checked = (val === option);
   });
   if (state.internalMode) window.renderFramingPanel();
+};
+
+// ── Step 4: Gauge selection ───────────────────────────────
+window.selectGauge = function(gauge) {
+  state.roofGauge = gauge;
+  ['29', '26'].forEach(g => {
+    const btn = document.getElementById('gauge-' + g);
+    if (!btn) return;
+    const active = g === gauge;
+    btn.classList.toggle('selected', active);
+    btn.style.background    = active ? 'var(--blue)' : 'var(--surface)';
+    btn.style.borderColor   = active ? 'var(--blue)' : 'var(--border)';
+    btn.style.color         = active ? 'white'        : 'var(--text)';
+  });
+};
+
+// ── Step 4: Roof color selection ─────────────────────────
+window.selectRoofColor = function(key, label, premium, tier) {
+  state.roofColor        = key;
+  state.roofColorLabel   = label;
+  state.roofColorPremium = !!premium;
+  state.roofColorTier    = tier || 'base';
+  document.querySelectorAll('.color-chip').forEach(el => {
+    el.classList.toggle('selected', el.dataset.colorKey === key);
+  });
 };
 
 // ── Step 5: Siding ───────────────────────────────────────
@@ -238,12 +261,12 @@ function updateIcwPreview() {
     prev.textContent = '';
     return;
   }
-  const m = calculateMaterials(state.width, state.length, state.wallHeight, state.style);
-  const p = getPrices();
-  const sqft   = state.iceWater.coverage === 'full' ? m.roofSqft : (m.roofLength * 6);
-  const rolls  = Math.ceil(sqft / 225);
-  const cost   = rolls * (p.ice_water_shield_roll || 250);
-  const label  = state.iceWater.coverage === 'full' ? 'full roof' : 'lower 6ft eaves';
+  const m     = calculateMaterials(state.width, state.length, state.wallHeight, state.style);
+  const p     = getPrices();
+  const sqft  = state.iceWater.coverage === 'full' ? m.roofSqft : (m.roofLength * 6);
+  const rolls = Math.ceil(sqft / 225);
+  const cost  = rolls * (p.ice_water_shield_roll || 250);
+  const label = state.iceWater.coverage === 'full' ? 'full roof' : 'lower 6ft eaves';
   prev.textContent = `${rolls} roll${rolls !== 1 ? 's' : ''} (${label}) — ${formatMoney(cost)}`;
   prev.style.color = 'var(--green)';
 }
@@ -412,11 +435,29 @@ document.getElementById('demo-length').addEventListener('change', updateDemoPrev
 window.onNameChange = function() {
   const name = document.getElementById('cust-name').value.trim();
   state.customer.name = name;
-  const letter = name ? name[0].toUpperCase() : 'X';
-  const num = getNextEstimateNumber(letter);
+  const num = getNextEstimateNumber(CONFIG.PREPARER_LETTER || 'F');
   document.getElementById('est-number-preview').textContent =
     `Estimate number will be: ${num}`;
 };
+
+// ── Color grid builder ────────────────────────────────────
+function buildColorGrid(containerId, colors, isPremium) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = colors.map(c => `
+    <div class="color-chip" data-color-key="${c.key}"
+         onclick="selectRoofColor('${c.key}', '${c.label}', ${!!isPremium}, '${c.premiumTier || 'base'}')">
+      <div class="chip-swatch" style="background:${c.hex}"></div>
+      ${c.gauge26 ? '<span class="chip-badge-26">26ga</span>' : ''}
+      <div class="chip-label">${c.label}</div>
+    </div>
+  `).join('');
+}
+
+// Build all grids once on load
+buildColorGrid('metal-color-grid',         CONFIG.METAL_COLORS_STANDARD, false);
+buildColorGrid('metal-color-grid-premium', CONFIG.METAL_COLORS_PREMIUM,  true);
+buildColorGrid('shingle-color-grid',       CONFIG.SHINGLE_COLORS,        false);
 
 // ── Expose for cross-module calls ─────────────────────────
 window.populateSizeDropdowns = populateSizeDropdowns;
