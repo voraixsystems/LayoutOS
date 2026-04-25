@@ -97,7 +97,17 @@ window.renderFramingPanel = function() {
     : 'Floor';
   html += `<div class="fp-section"><div class="fp-section-title">${sectionTitleFloor}</div>`;
   html += header();
-  html += row('PT Runners', '4×4×16 PT', fl.runnerCount, p['4x4x16_pt'] || 38, noFloor);
+  // Skids — 4×4 PT
+  const sk = fl.skids;
+  const skidSizeLabel = Object.entries(sk.piecesPerRow)
+    .sort(([a], [b]) => b - a)
+    .map(([size, qty]) => `${size}ft×${qty * sk.rowCount}`)
+    .join('  ');
+  const avgSkidUnit = sk.totalPieces > 0 ? Math.round(sk.skidCost / sk.totalPieces) : 0;
+  html += row(
+    `Skids <span style="font-size:10px;color:var(--muted)">${sk.rowCount} rows · ${sk.totalPieces} pcs · ${sk.totalLFT} LFT<br>${skidSizeLabel}<br>↳ stagger rows</span>`,
+    '4×4 PT', sk.totalPieces, avgSkidUnit, noFloor
+  );
   if (fl.nailerCount > 0) {
     html += row('Nailers', '2×4 cutoffs', fl.nailerCount,
       Math.round(fl.nailerCost / fl.nailerCount), noFloor);

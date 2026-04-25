@@ -336,6 +336,7 @@ window.confirmGenModal = function() {
   window.closeGenModal();
   logQuote(quote, 'shed');
   incrementEstimateCounter();
+  window.deleteDraft?.();
 
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(quote))));
   localStorage.setItem('layoutos_current_quote', JSON.stringify(quote));

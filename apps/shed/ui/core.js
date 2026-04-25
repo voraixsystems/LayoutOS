@@ -68,11 +68,183 @@ export const state = {
   rafterSpacing: 24,
 };
 
+// ── Step nav ─────────────────────────────────────────────
+const STEP_LABELS = {
+  1:'Style', 2:'Size', 3:'Wall Ht', 4:'Roofing',
+  5:'Siding', 6:'Foundation', 7:'Add-Ons',
+  8:'Demo', 9:'Customer', 10:'Summary',
+};
+
+function isStepDone(n) {
+  if (n === 9) return !!(state.customer && state.customer.name);
+  return n < state.step;
+}
+
+window.renderStepNav = function() {
+  const list = document.getElementById('step-nav-list');
+  if (!list) return;
+  list.innerHTML = '';
+  for (let n = 1; n <= TOTAL_STEPS; n++) {
+    const done = isStepDone(n);
+    const current = n === state.step;
+    const item = document.createElement('div');
+    item.className = 'snav-item' +
+      (current ? ' snav-current' : '') +
+      (done && !current ? ' snav-done' : '');
+    item.innerHTML = `<span class="snav-num">${n}</span><span class="snav-label">${STEP_LABELS[n]}</span>`;
+    item.onclick = () => window.jumpStep(n);
+    list.appendChild(item);
+  }
+};
+
+window.jumpStep = function(n) {
+  state.step = n;
+  window.renderStepNav();
+  const el = document.getElementById('s' + n);
+  if (el) {
+    el.classList.add('step-expanded');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+window.toggleStep = function(n) {
+  document.getElementById('s' + n)?.classList.toggle('step-expanded');
+};
+
+window.toggleStepNav = function() {
+  document.getElementById('step-nav').classList.toggle('collapsed');
+};
+
+function activateStepCollapse() {
+  document.querySelectorAll('.step-card').forEach(card => {
+    card.classList.remove('step-expanded');
+    const title = card.querySelector('.step-title');
+    if (title && !title.dataset.collapseWired) {
+      const n = parseInt(card.id.slice(1));
+      title.addEventListener('click', () => window.toggleStep(n));
+      title.dataset.collapseWired = '1';
+    }
+  });
+  document.getElementById('s' + state.step)?.classList.add('step-expanded');
+}
+
+// ── Draft autosave ───────────────────────────────────────
+const DRAFT_KEY = 'shed_draft';
+
+function saveDraft() {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+  updateDraftFooter();
+}
+
+window.deleteDraft = function() {
+  localStorage.removeItem(DRAFT_KEY);
+  updateDraftFooter();
+};
+
+function updateDraftFooter() {
+  const el = document.getElementById('footer-draft-link');
+  if (!el) return;
+  const raw = localStorage.getItem(DRAFT_KEY);
+  el.style.display = (raw && JSON.parse(raw).step >= 5) ? 'inline' : 'none';
+}
+
+function restoreSizeDropdowns(savedWidth, savedLength) {
+  if (!state.style) return;
+  const widths = getValidWidths(state.style);
+  const wSel = document.getElementById('sel-width');
+  wSel.innerHTML = widths.map(w => `<option value="${w}">${w} ft</option>`).join('');
+  state.width = widths.includes(savedWidth) ? savedWidth : widths[0];
+  wSel.value = state.width;
+  const lengths = getValidLengths(state.style, state.width);
+  const lSel = document.getElementById('sel-length');
+  lSel.innerHTML = lengths.map(l => `<option value="${l}">${l} ft</option>`).join('');
+  state.length = lengths.includes(savedLength) ? savedLength : lengths[0];
+  lSel.value = state.length;
+}
+
+function restoreStateToUI() {
+  buildStyleGrid();
+  if (state.style && state.width && state.length) restoreSizeDropdowns(state.width, state.length);
+  // Wall height
+  ['8','10'].forEach(h => {
+    const row = document.getElementById('wh-' + h);
+    if (!row) return;
+    row.classList.toggle('selected', state.wallHeight === parseInt(h));
+    const inp = row.querySelector('input');
+    if (inp) inp.checked = state.wallHeight === parseInt(h);
+  });
+  // Roof type
+  ['shingle','metal'].forEach(r => {
+    const row = document.getElementById('roof-' + r);
+    if (!row) return;
+    row.classList.toggle('selected', state.roof === r);
+    const inp = row.querySelector('input');
+    if (inp) inp.checked = state.roof === r;
+  });
+  const metalOpts = document.getElementById('metal-roof-options');
+  const shingleOpts = document.getElementById('shingle-color-options');
+  if (metalOpts) metalOpts.style.display = state.roof === 'metal' ? 'block' : 'none';
+  if (shingleOpts) shingleOpts.style.display = state.roof === 'shingle' ? 'block' : 'none';
+  // Roof sheathing
+  [['none','none'],['vb','vb_only'],['osb','osb'],['zip','zip']].forEach(([id, key]) => {
+    const row = document.getElementById('rso-' + id);
+    if (!row) return;
+    row.classList.toggle('selected', state.roofSheathingOption === key);
+    const inp = row.querySelector('input');
+    if (inp) inp.checked = state.roofSheathingOption === key;
+  });
+  // Siding
+  ['lp','vinyl'].forEach(s => {
+    const row = document.getElementById('siding-' + s);
+    if (!row) return;
+    row.classList.toggle('selected', state.siding === s);
+    const inp = row.querySelector('input');
+    if (inp) inp.checked = state.siding === s;
+  });
+  const vinylOpts = document.getElementById('vinyl-wall-options');
+  if (vinylOpts) vinylOpts.style.display = state.siding === 'vinyl' ? 'block' : 'none';
+  // Wall sheathing
+  [['none','none'],['hw','house_wrap'],['zip','zip']].forEach(([id, key]) => {
+    const row = document.getElementById('wso-' + id);
+    if (!row) return;
+    row.classList.toggle('selected', state.wallSheathingOption === key);
+    const inp = row.querySelector('input');
+    if (inp) inp.checked = state.wallSheathingOption === key;
+  });
+  // Customer fields
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+  setVal('cust-name', state.customer.name);
+  setVal('cust-addr', state.customer.address);
+  setVal('cust-email', state.customer.email);
+  setVal('cust-phone', state.customer.phone);
+  // Carriage variant
+  const cvp = document.getElementById('carriage-variant-picker');
+  if (cvp) cvp.style.display = state.style === 'carriage' ? 'block' : 'none';
+}
+
+window.resumeDraft = function() {
+  const raw = localStorage.getItem(DRAFT_KEY);
+  if (!raw) return;
+  const saved = JSON.parse(raw);
+  Object.assign(state, saved);
+  restoreStateToUI();
+  const target = saved.step || 1;
+  if (state.internalMode) {
+    window.renderStepNav();
+    window.jumpStep(target);
+  } else {
+    document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('s' + target)?.classList.add('active');
+    updateProgress();
+  }
+};
+
 // ── Init ─────────────────────────────────────────────────
 await loadPrices();
 document.getElementById('price-ramp').textContent = `$${CONFIG.ADDON_RAMP_PER_OPENING} per opening`;
 buildStyleGrid();
 updateProgress();
+updateDraftFooter();
 
 // ── Keyboard listeners: LAYOUT (internal) + DEVMODE ─────
 let keyBuf = '';
@@ -90,6 +262,8 @@ document.addEventListener('keydown', (e) => {
     document.body.classList.add('internal-mode');
     window.renderFramingPanel();
     window.rebuildPreview();
+    activateStepCollapse();
+    window.renderStepNav();
   }
   if (devKeyBuf === 'DEVMODE') window.activateDevMode();
 });
@@ -119,9 +293,12 @@ window.goStep = function(n) {
   document.getElementById('s' + state.step).classList.remove('active');
   state.step = n;
   document.getElementById('s' + n).classList.add('active');
+  if (state.internalMode) document.getElementById('s' + n)?.classList.add('step-expanded');
   updateProgress();
   if (n === 10) window.rebuildPreview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  saveDraft();
+  window.renderStepNav();
 };
 
 function validateStep(step) {

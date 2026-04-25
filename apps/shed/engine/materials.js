@@ -129,6 +129,66 @@ export function calculateMaterials(width, length, wallHeight, styleKey) {
 //   wallSheathingOption = 'none'   ('none'|'house_wrap'|'zip')
 // }
 // ------------------------------------------------------------
+// ── Skid calculator ─────────────────────────────────────────
+// Returns row count, piece breakdown by stock size, total pcs, LFT, and cost.
+// Row count: ≤10→2, ≤14→3, ≤17→4, ≤20→5
+// Piece combos use a lookup for even-ft lengths 8-40; greedy fallback otherwise.
+function calculateSkids(width, length) {
+  const p = getPrices();
+
+  const rowCount = width <= 10 ? 2
+    : width <= 14 ? 3
+    : width <= 17 ? 4
+    : 5;
+
+  // Pieces to PURCHASE per row (may include cut-to-fit; last piece may have scrap)
+  const SKID_COMBOS = {
+     8: {8:1},
+    10: {10:1},
+    12: {12:1},
+    14: {8:2},
+    16: {16:1},
+    18: {10:1, 8:1},
+    20: {12:1, 8:1},
+    22: {12:1, 10:1},
+    24: {16:1, 8:1},
+    26: {16:1, 10:1},
+    28: {16:1, 12:1},
+    30: {12:1, 10:1, 8:1},
+    32: {16:2},
+    34: {16:1, 10:1, 8:1},
+    36: {16:2, 8:1},
+    38: {16:1, 12:1, 10:1},
+    40: {16:2, 8:1},
+  };
+
+  function greedyFill(len) {
+    const sizes = [16, 12, 10, 8];
+    const result = {};
+    let rem = len;
+    for (const s of sizes) {
+      while (rem >= s) { result[s] = (result[s] || 0) + 1; rem -= s; }
+    }
+    if (rem > 0) result[8] = (result[8] || 0) + 1;
+    return result;
+  }
+
+  const piecesPerRow = SKID_COMBOS[length] ?? greedyFill(length);
+
+  const UNIT = { 16: p['4x4x16_pt'] || 27.98, 12: p['4x4x12_pt'] || 21.00,
+                 10: p['4x4x10_pt'] || 17.50,  8: p['4x4x8_pt']  || 14.00 };
+
+  const pcsPerRow = Object.values(piecesPerRow).reduce((a, b) => a + b, 0);
+  const totalPieces = pcsPerRow * rowCount;
+  const totalLFT    = length * rowCount;
+
+  const costPerRow = Object.entries(piecesPerRow)
+    .reduce((sum, [size, qty]) => sum + qty * (UNIT[parseInt(size)] || 0), 0);
+  const skidCost = Math.round(costPerRow * rowCount * 100) / 100;
+
+  return { rowCount, piecesPerRow, pcsPerRow, totalPieces, totalLFT, skidCost };
+}
+
 export function calculateFraming(params) {
   const {
     width, length, wallHeight, style,
@@ -144,16 +204,14 @@ export function calculateFraming(params) {
   const p = getPrices();
 
   // ── FLOOR ──────────────────────────────────────────────────
-  // Runners: 4×4×16 PT skids, staggered seams
-  const runnerCount     = Math.ceil(width / 2); // 2ft OC across width: 16ft→8, 12ft→6, 8ft→4
-  const sticksPerRunner = Math.ceil(length / 16);
-  const seamsPerRunner  = sticksPerRunner - 1;
-  const totalSeams      = seamsPerRunner * runnerCount;
-  const nailerCount     = totalSeams * 2;          // 2×4 nailer each side of every seam
-  const nailerLF        = nailerCount * 2;          // 2ft each
-  const runnerSticks    = sticksPerRunner * runnerCount;
-  const runnerCost      = runnerSticks * (p['4x4x16_pt'] || 27.98);
-  const nailerCost      = nailerLF * ((p['2x4x8_spf'] || 3.85) / 8);
+  const skids = calculateSkids(width, length);
+
+  // Seam nailers: 2×4 on each side of every butt joint (2ft each)
+  const seamsPerRow  = skids.pcsPerRow - 1;
+  const totalSeams   = seamsPerRow * skids.rowCount;
+  const nailerCount  = totalSeams * 2;
+  const nailerLF     = nailerCount * 2;
+  const nailerCost   = nailerLF * ((p['2x4x8_spf'] || 3.85) / 8);
 
   // Floor joists — 12in OC, spanning the width
   const joistSize        = width >= 14 ? '2x6' : '2x4';
@@ -168,7 +226,7 @@ export function calculateFraming(params) {
   const subfloorSheets = Math.ceil(floorSqft / 32);
   const subfloorCost   = subfloorSheets * (p['subfloor_sheet'] || 59.75);
 
-  const floorTotal = Math.round(runnerCost + nailerCost + joistCost + subfloorCost);
+  const floorTotal = Math.round(skids.skidCost + nailerCost + joistCost + subfloorCost);
 
   // ── WALLS ──────────────────────────────────────────────────
   // Studs at 16in OC — use floor(dim*12/16)+1 to avoid floating-point overshoot
@@ -293,7 +351,7 @@ export function calculateFraming(params) {
 
   return {
     floor: {
-      runnerCount, runnerSticks, runnerCost,
+      skids,
       nailerCount, nailerLF, nailerCost,
       joistSize, joistKey, joistStockLength, joistCount, rimJoistCount, joistCost,
       subfloorSheets, subfloorCost,

@@ -160,7 +160,7 @@ export function buildQuote(inputs) {
 
   // Premium color upcharge — per panel LF (crinkle/matte finish)
   const roofColorPremium = inputs.roofColorPremium || false;
-  const roofColorLabel   = inputs.roofColorLabel   || '';
+  const roofColorLabel   = inputs.roofColorLabel   || (roof === 'metal' ? 'Stealth Black' : 'Charcoal');
   const roofColorTier    = inputs.roofColorTier    || 'base';
   const premiumColorCost = (roof === 'metal' && roofColorPremium)
     ? Math.round(panelLF * (roofColorTier === 'crinkle'

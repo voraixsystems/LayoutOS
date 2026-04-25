@@ -91,7 +91,10 @@ export const PRICES_FALLBACK = {
 
   // Framing lumber — SPF (2x4, 2x6) + Fir (2x8, 2x10) + PT skids
   // SOURCE: MaterialPrices.json. Keys consumed by materials.js takeoff.
-  '4x4x16_pt':    27.98,
+  '4x4x8_pt':     10.98,
+  '4x4x10_pt':    17.58,
+  '4x4x12_pt':    21.98,
+  '4x4x16_pt':    28.28,
   '2x4x8_spf':     3.85,
   '2x4x10_spf':    5.74,
   '2x4x12_spf':    7.07,
