@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LayoutOS — Fudd Service Estimator</title>
+<title>Shed Estimator — LayoutOS</title>
 <link rel="stylesheet" href="shed-quote.css">
 </head>
 <body>
@@ -11,8 +11,7 @@
 <!-- ── Header ─────────────────────────────────────────── -->
 <div id="app-header">
   <span class="brand-sub">LayoutOS</span>
-  <span class="brand-main">Fudd Service</span>
-  <span class="brand-tag">Exterior Construction</span>
+  <span class="brand-main">Shed Estimator</span>
   <span id="int-badge">⬡ INTERNAL MODE</span>
   <span id="dev-badge">⬡ DEV MODE</span>
 </div>
@@ -576,11 +575,46 @@
 
       <div class="field" style="margin-bottom:6px">
         <label>Payment Terms</label>
-        <select id="payment-tier" onchange="rebuildPreview()" data-dev-config="PAYMENT_LARGE_THRESHOLD">
+        <select id="payment-tier" onchange="onPaymentTierChange()" data-dev-config="PAYMENT_LARGE_THRESHOLD">
           <option value="standard">Standard — 50% deposit, balance on completion</option>
           <option value="three_tier">3-Tier Payment Schedule</option>
         </select>
       </div>
+
+      <div id="milestone-editor" style="display:none;margin-bottom:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Enter % for tiers 1 and 2 — tier 3 fills automatically.</div>
+        <table style="width:100%;font-size:13px;border-collapse:collapse">
+          <thead>
+            <tr style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">
+              <td style="padding:3px 6px 6px 0">Milestone</td>
+              <td style="padding:3px 6px 6px;text-align:center;width:64px">%</td>
+              <td style="padding:3px 0 6px;text-align:right;width:90px">Amount</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:5px 6px 5px 0;color:#374151">Deposit — due at signing</td>
+              <td style="padding:5px 6px;text-align:center"><input id="ms-pct-1" type="number" min="1" max="98" step="1" value="40" style="width:52px;text-align:center;padding:4px;border:1px solid #d1d5db;border-radius:4px;font-size:13px" oninput="updateMilestones()"></td>
+              <td style="padding:5px 0;text-align:right;font-weight:600" id="ms-amt-1">—</td>
+            </tr>
+            <tr>
+              <td style="padding:5px 6px 5px 0"><input id="ms-label-2" type="text" value="Progress payment" placeholder="Milestone label" style="width:100%;border:1px solid #d1d5db;border-radius:4px;padding:3px 6px;font-size:12px;color:#374151"></td>
+              <td style="padding:5px 6px;text-align:center"><input id="ms-pct-2" type="number" min="1" max="98" step="1" value="33" style="width:52px;text-align:center;padding:4px;border:1px solid #d1d5db;border-radius:4px;font-size:13px" oninput="updateMilestones()"></td>
+              <td style="padding:5px 0;text-align:right;font-weight:600" id="ms-amt-2">—</td>
+            </tr>
+            <tr style="border-top:1px solid #e5e7eb">
+              <td style="padding:6px 6px 4px 0;color:#6b7280">Balance — due at completion</td>
+              <td style="padding:6px 6px 4px;text-align:center;color:#6b7280;font-size:13px" id="ms-pct-3">—</td>
+              <td style="padding:6px 0 4px;text-align:right;font-weight:600;color:#6b7280" id="ms-amt-3">—</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <button type="button" onclick="roundMilestones()" style="padding:5px 14px;font-size:12px;font-weight:600;border:1px solid #d1d5db;border-radius:4px;background:#f9fafb;cursor:pointer">Round to $500</button>
+          <span id="ms-warn" style="font-size:11px;color:#dc2626;display:none">⚠ Tiers exceed 100%</span>
+        </div>
+      </div>
+
       <div class="field" style="margin-bottom:10px">
         <label style="font-weight:400;color:var(--muted)">Custom wording override <span style="font-size:11px">(leave blank to use selection above — clear to omit payment block)</span></label>
         <textarea id="custom-payment-note" rows="2"
@@ -626,7 +660,7 @@
 
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="goStep(9)">← Back</button>
-      <button class="btn btn-green" onclick="generateQuote()">Generate Estimate →</button>
+      <button class="btn btn-green" id="btn-generate" onclick="generateQuote()">Get My Quote →</button>
       <button class="btn btn-internal" id="int-direct-btn" style="display:none"
               onclick="generateQuote(true)">⬡ Internal Generate</button>
     </div>

@@ -73,17 +73,18 @@ export function getBasePrice(styleKey, width, length) {
   const styleData = ANCHOR[effectiveStyle];
   if (!styleData) return 0;
 
-  // Resolve price alias (e.g. hip → deluxe)
+  // Resolve price alias (e.g. hip → deluxe) + optional style premium
   const pricingKey = styleData.priceAlias || effectiveStyle;
   const style = ANCHOR[pricingKey];
   if (!style) return 0;
+  const stylePremium = styleData.hipPremium || 1;
 
   const sqft = width * length;
   const table = buildSqftTable(style.base_prices);
 
   // Standard widths (8–16ft): direct interpolation
   if (width <= 16) {
-    return Math.round(interpolateSqft(table, sqft));
+    return Math.round(interpolateSqft(table, sqft) * stylePremium);
   }
 
   // 18ft and 20ft widths: scale from 16ft base, then apply premium
@@ -95,7 +96,7 @@ export function getBasePrice(styleKey, width, length) {
   const sixteenPrice = interpolateSqft(table, sixteenSqft);
   const widthFactor = width / 16;
   const premium = CONFIG.WIDTH_PREMIUMS[width] || 1;
-  return Math.round(sixteenPrice * widthFactor * premium);
+  return Math.round(sixteenPrice * widthFactor * premium * stylePremium);
 }
 
 // ------------------------------------------------------------

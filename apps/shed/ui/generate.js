@@ -38,77 +38,103 @@ function rebuildPreview() {
     renderMarginView(quote);
     buildOverrideList(quote);
     window.renderFramingPanel();
+    if (document.getElementById('payment-tier')?.value === 'three_tier') updateMilestones();
   }
   if (state.devMode) { window.renderDevMarginView(quote); window.refreshDevFlags(); }
 }
 
 function renderPreview(quote) {
   const el = document.getElementById('quote-preview');
-  const { lineItems, pricing, materials } = quote;
+  const { lineItems, pricing } = quote;
+  const b = quote.building;
 
+  if (!state.internalMode) {
+    // Client mode — specs + total only, no line item breakdown
+    const roofLabel   = b.roof   === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle';
+    const sidingLabel = b.siding === 'vinyl' ? 'Vinyl' : 'LP SmartSide';
+    const addOns = lineItems.filter(i =>
+      i.group && !['base','roof','siding','conditioning'].includes(i.group) && i.description
+    );
+
+    let html = `
+      <div class="ql-section">
+        <div class="ql-section-title">Your Quote Summary</div>
+        <div class="ql-row"><div class="ql-desc">${ANCHOR[b.style]?.label || b.style}</div><div>${b.width}×${b.length}ft · ${b.sqft} sqft</div></div>
+        <div class="ql-row"><div class="ql-desc">Wall height</div><div>${b.wallHeight}ft</div></div>
+        <div class="ql-row"><div class="ql-desc">Roof</div><div>${roofLabel}</div></div>
+        <div class="ql-row"><div class="ql-desc">Siding</div><div>${sidingLabel}</div></div>
+      </div>`;
+
+    if (addOns.length) {
+      html += `<div class="ql-section"><div class="ql-section-title">Add-Ons</div>`;
+      addOns.forEach(i => {
+        html += `<div class="ql-row"><div class="ql-desc">${i.description}</div><div>${i.qty > 1 ? '×' + i.qty : ''}</div></div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `
+      <div class="ql-total-row">
+        <span>QUOTE TOTAL</span>
+        <span>${formatMoney(pricing.total)}</span>
+      </div>
+      <div class="ql-materials" style="margin-top:10px;font-size:12px">
+        Price subject to site conditions. Contact us to receive your formal written estimate.
+      </div>`;
+
+    if (quote.condensationWarning) {
+      html += `<div class="notice notice-warn" style="margin-top:12px">
+        ⚠ Metal roof + no conditioning — condensation risk. Consider adding a conditioning package.
+      </div>`;
+    }
+
+    el.innerHTML = html;
+    return;
+  }
+
+  // Internal mode — full line item breakdown
   let html = `
     <div class="ql-section">
       <div class="ql-section-title">Building</div>
       <div class="ql-row">
-        <div class="ql-desc">${ANCHOR[quote.building.style]?.label || quote.building.style}</div>
-        <div>${quote.building.width}×${quote.building.length}ft</div>
-        <div>${quote.building.sqft} sqft</div>
+        <div class="ql-desc">${ANCHOR[b.style]?.label || b.style}</div>
+        <div>${b.width}×${b.length}ft</div>
+        <div>${b.sqft} sqft</div>
       </div>
-      <div class="ql-row">
-        <div class="ql-desc">Wall height</div>
-        <div>${quote.building.wallHeight}ft</div>
-      </div>
-      <div class="ql-row">
-        <div class="ql-desc">Roof</div>
-        <div>${quote.building.roof === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle'}</div>
-      </div>
-      <div class="ql-row">
-        <div class="ql-desc">Siding</div>
-        <div>${quote.building.siding === 'vinyl' ? 'Vinyl' : 'LP SmartSide'}</div>
-      </div>
-      <div class="ql-row">
-        <div class="ql-desc">Conditioning</div>
-        <div>${quote.conditioning.label}</div>
-      </div>
+      <div class="ql-row"><div class="ql-desc">Wall height</div><div>${b.wallHeight}ft</div></div>
+      <div class="ql-row"><div class="ql-desc">Roof</div><div>${b.roof === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle'}</div></div>
+      <div class="ql-row"><div class="ql-desc">Siding</div><div>${b.siding === 'vinyl' ? 'Vinyl' : 'LP SmartSide'}</div></div>
+      <div class="ql-row"><div class="ql-desc">Conditioning</div><div>${quote.conditioning?.label || '—'}</div></div>
     </div>
-
     <div class="ql-section">
       <div class="ql-section-title">Line Items</div>
       <div class="ql-row" style="font-size:12px;color:var(--muted);font-weight:700">
         <div class="ql-desc">Description</div>
         <div class="ql-qty">Qty</div>
         <div class="ql-price">Cost</div>
-      </div>
-  `;
+      </div>`;
 
   lineItems.forEach(item => {
     html += `
       <div class="ql-row">
-        <div class="ql-desc">
-          ${item.description}
-          ${item.flag ? `<div class="flag-note">⚑ ${item.flag}</div>` : ''}
-        </div>
+        <div class="ql-desc">${item.description}${item.flag ? `<div class="flag-note">⚑ ${item.flag}</div>` : ''}</div>
         <div class="ql-qty">${item.qty || 1}</div>
         <div class="ql-price ${item.isTBD ? 'tbd' : ''}">${formatMoney(item.total)}</div>
-      </div>
-    `;
+      </div>`;
   });
 
-  html += `
-    </div>
+  html += `</div>
     <div class="ql-total-row">
       <span>ESTIMATED TOTAL</span>
       <span>${formatMoney(pricing.total)}</span>
-    </div>
-  `;
+    </div>`;
 
   if (quote.condensationWarning) {
     html += `<div class="notice notice-warn" style="margin-top:12px">
       ⚠ Metal roof + no conditioning — condensation risk. Consider adding a conditioning package.
     </div>`;
   }
-
-  if (quote.autoNotes.length) {
+  if (quote.autoNotes?.length) {
     html += `<div class="ql-materials" style="margin-top:12px">`;
     quote.autoNotes.forEach(n => { html += `<div>• ${n}</div>`; });
     html += `</div>`;
@@ -139,6 +165,9 @@ function renderMarginView(quote) {
 }
 
 function buildOverrideList(quote) {
+  Object.keys(state.priceOverrides).forEach(k => {
+    if (!state.priceOverrides[k]) delete state.priceOverrides[k];
+  });
   const list = document.getElementById('override-list');
   const overrideable = quote.lineItems.filter(i => !i.isTBD && i.total !== null);
   list.innerHTML = overrideable.map(item => `
@@ -158,9 +187,10 @@ window.collectOverridesAndRebuild = function() {
 
 function collectOverrides() {
   document.querySelectorAll('[id^="ov-"]').forEach(el => {
-    const id = el.id.replace('ov-', '');
+    const id  = el.id.replace('ov-', '');
     const val = parseFloat(el.value);
-    if (!isNaN(val)) state.priceOverrides[id] = val;
+    if (!isNaN(val) && val > 0) state.priceOverrides[id] = val;
+    else delete state.priceOverrides[id];
   });
 }
 
@@ -208,6 +238,21 @@ let _genSuffix = '';
 let _intSuffix = '';
 
 window.generateQuote = function(directMode) {
+  if (!state.internalMode) {
+    const name = document.getElementById('cust-name').value.trim();
+    if (!name) {
+      window.goStep(10);
+      window.showStepError(10, 'Your name is required to generate a quote.');
+      return;
+    }
+    const letter = resolveEstimateLetter();
+    const quote  = buildQuote({ ...state, estimateNumber: getNextEstimateNumber(letter) });
+    logQuote(quote, 'client-quote');
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(quote))));
+    localStorage.setItem('layoutos_current_quote', JSON.stringify(quote));
+    window.open(`../../core/quote.html?q=${encoded}`, '_blank');
+    return;
+  }
   window.openGenModal(!!directMode);
 };
 
@@ -261,9 +306,11 @@ window.openGenModal = function(directMode) {
   document.getElementById('gen-suf-jr').classList.toggle('active', _genSuffix === 'Jr.');
   document.getElementById('gen-suf-sr').classList.toggle('active', _genSuffix === 'Sr.');
 
-  const panelPay = collectCustomPayment();
-  document.getElementById('gen-payment').value = panelPay ||
-    '50% deposit required to schedule. Balance due upon completion.';
+  const panelPay  = collectCustomPayment();
+  const isTierred = document.getElementById('payment-tier')?.value === 'three_tier';
+  document.getElementById('gen-payment').value = isTierred
+    ? (panelPay || '3-tier payment schedule — see milestone breakdown below.')
+    : (panelPay || '50% deposit required to schedule. Balance due upon completion.');
 
   document.getElementById('gen-modal-backdrop').classList.add('open');
   setTimeout(() => {
@@ -331,7 +378,9 @@ window.confirmGenModal = function() {
     const fullName = estName + (_genSuffix ? ', ' + _genSuffix : '');
     quote.estimator = { name: fullName, phone: estPhone, email: estEmail, website: estWeb };
   }
-  quote.paymentNote = payTerms;
+  quote.paymentNote       = payTerms;
+  const milestones = collectMilestones();
+  if (milestones) quote.paymentMilestones = milestones;
 
   window.closeGenModal();
   logQuote(quote, 'shed');
@@ -347,6 +396,65 @@ window.confirmGenModal = function() {
 document.getElementById('gen-modal-backdrop').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) window.closeGenModal();
 });
+
+// ── Milestone editor ─────────────────────────────────────
+window.onPaymentTierChange = function() {
+  const tier = document.getElementById('payment-tier').value;
+  document.getElementById('milestone-editor').style.display =
+    tier === 'three_tier' ? 'block' : 'none';
+  if (tier === 'three_tier') updateMilestones();
+  rebuildPreview();
+};
+
+window.updateMilestones = function() {
+  const total = state._lastQuoteTotal || 0;
+  const p1 = parseFloat(document.getElementById('ms-pct-1').value) || 0;
+  const p2 = parseFloat(document.getElementById('ms-pct-2').value) || 0;
+  const p3 = Math.max(0, 100 - p1 - p2);
+  const warn = document.getElementById('ms-warn');
+
+  if (p1 + p2 >= 100) {
+    warn.style.display = 'inline';
+  } else {
+    warn.style.display = 'none';
+  }
+
+  const a1 = Math.round(total * p1 / 100);
+  const a2 = Math.round(total * p2 / 100);
+  const a3 = total - a1 - a2;
+
+  document.getElementById('ms-pct-3').textContent = p3.toFixed(1) + '%';
+  document.getElementById('ms-amt-1').textContent = '$' + a1.toLocaleString();
+  document.getElementById('ms-amt-2').textContent = '$' + a2.toLocaleString();
+  document.getElementById('ms-amt-3').textContent = '$' + a3.toLocaleString();
+};
+
+window.roundMilestones = function() {
+  const total = state._lastQuoteTotal || 0;
+  const p1 = parseFloat(document.getElementById('ms-pct-1').value) || 0;
+  const p2 = parseFloat(document.getElementById('ms-pct-2').value) || 0;
+  const r = n => Math.round(n / 500) * 500;
+
+  const a1r = r(total * p1 / 100);
+  const a2r = r(total * p2 / 100);
+  const a3r = total - a1r - a2r;
+
+  document.getElementById('ms-amt-1').textContent = '$' + a1r.toLocaleString();
+  document.getElementById('ms-amt-2').textContent = '$' + a2r.toLocaleString();
+  document.getElementById('ms-amt-3').textContent = '$' + a3r.toLocaleString();
+};
+
+function collectMilestones() {
+  const tier = document.getElementById('payment-tier')?.value;
+  if (tier !== 'three_tier') return null;
+  const parse  = s => parseInt((s || '').replace(/[$,]/g, '')) || 0;
+  const label2 = (document.getElementById('ms-label-2')?.value?.trim()) || 'Progress payment';
+  return [
+    { label: 'Deposit — due at signing', amount: parse(document.getElementById('ms-amt-1').textContent) },
+    { label: label2,                     amount: parse(document.getElementById('ms-amt-2').textContent) },
+    { label: 'Balance — due at completion', amount: parse(document.getElementById('ms-amt-3').textContent) },
+  ];
+}
 
 // ── Helpers ───────────────────────────────────────────────
 function resolveEstimateLetter() {

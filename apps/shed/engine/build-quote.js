@@ -195,7 +195,9 @@ export function buildQuote(inputs) {
   lineItems.push({
     id: 'base',
     qty: 1,
-    description: `${baseStyleLabel} — ${width}×${length}ft, ${wallHeight}ft walls`,
+    description: (style && width && length)
+      ? `${baseStyleLabel} — ${width}×${length}ft, ${wallHeight}ft walls`
+      : 'Base price — complete configuration to calculate',
     unitPrice: applyOverride(priceOverrides, 'base', basePrice),
     total: applyOverride(priceOverrides, 'base', basePrice),
     isBase: true,

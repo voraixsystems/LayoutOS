@@ -126,12 +126,13 @@ export const ANCHOR = {
     },
   },
   hip: {
-    label: 'Deluxe Hip',
-    description: 'Hip-roof variant. Symmetric 12in overhang on all four sides. Priced as Deluxe.',
+    label: 'Deluxe Hip Roof',
+    description: 'Four-slope hip roof with 12in overhang on all sides. Clean, finished look — ideal for open lots and visibility from multiple angles.',
     overhangKey: 'OVERHANG_DELUXE',
     widthRange: [8, 20],
     lengthRange: [8, 40],
     priceAlias: 'deluxe',
+    hipPremium: 1.023,
     base_prices: {},
   },
 };

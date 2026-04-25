@@ -258,6 +258,7 @@ document.addEventListener('keydown', (e) => {
     document.getElementById('int-badge').style.display = 'inline-block';
     document.getElementById('internal-panel').style.display = 'block';
     document.getElementById('int-direct-btn').style.display = 'inline-block';
+    document.getElementById('btn-generate').textContent = 'Generate Estimate →';
     document.body.style.setProperty('--blue-lt', '#f5f3ff');
     document.body.classList.add('internal-mode');
     window.renderFramingPanel();

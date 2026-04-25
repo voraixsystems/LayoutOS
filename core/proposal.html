@@ -499,17 +499,18 @@ function render(q) {
   const payNote = q.paymentNote !== undefined ? q.paymentNote
     : '50% deposit required to schedule. Balance due upon completion.';
   const grandTotal = q.manualPrice > 0 ? q.manualPrice : (p.total || 0);
-  const showMilestones = grandTotal >= 15000;
+  const showMilestones = q.paymentMilestones || grandTotal >= 15000;
   if (payNote) {
     html += `<div class="payment-block"><strong>Payment Terms</strong>`;
     if (showMilestones) {
-      const milestones = [
-        { label: 'Deposit — due at signing',          pct: 0.33 },
-        { label: 'Progress — delivery / rough-in',    pct: 0.34 },
-        { label: 'Balance — due at completion',        pct: 0.33 },
+      const milestones = q.paymentMilestones || [
+        { label: 'Deposit — due at signing',       amount: Math.round(grandTotal * 0.33) },
+        { label: 'Progress — delivery / rough-in', amount: Math.round(grandTotal * 0.34) },
+        { label: 'Balance — due at completion',    amount: Math.round(grandTotal * 0.33) },
       ];
       milestones.forEach(m => {
-        html += `<div class="milestone-row"><span>${m.label}</span><span>${formatCurrency(Math.round(grandTotal * m.pct))}</span></div>`;
+        const amt = m.amount !== undefined ? m.amount : Math.round(grandTotal * (m.pct || 0));
+        html += `<div class="milestone-row"><span>${m.label}</span><span>${formatCurrency(amt)}</span></div>`;
       });
     } else {
       html += ` ${escHtml(payNote)}`;
