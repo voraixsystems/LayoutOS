@@ -208,7 +208,7 @@ body {
 </div>
 
 <script type="module">
-import { formatCurrency, formatDate } from './layoutos-core.js';
+import { formatCurrency, formatDate } from '../../core/layoutos-core.js';
 
 const QUOTES_KEY = 'layoutos_quotes_log';
 
@@ -220,7 +220,7 @@ function saveQuotes(arr) { localStorage.setItem(QUOTES_KEY, JSON.stringify(arr))
 function openOutput(quote) {
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(quote))));
   localStorage.setItem('layoutos_current_quote', JSON.stringify(quote));
-  return window.open(`shed-output.html?q=${encoded}`, '_blank');
+  return window.open(`../../core/proposal.html?q=${encoded}`, '_blank');
 }
 
 function render() {
