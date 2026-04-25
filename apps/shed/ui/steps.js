@@ -55,8 +55,11 @@ function updateSizeInfo() {
   updateLoftAvailability();
 
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 
   updateWallHeightPreview();
+  window.renderStepNav?.();
+  if (state.internalMode) window.saveDraftFromStep?.();
 }
 
 // ── Loft availability note (Step 7) ──────────────────────
@@ -101,6 +104,7 @@ window.selectWallHeight = function(h) {
   updateWallHeightPreview();
   window.renderGarageDoorBuilder();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 function updateWallHeightPreview() {
@@ -179,6 +183,7 @@ window.selectRoof = function(r) {
   const cn = document.getElementById('metal-conditioning-notice');
   if (cn) cn.style.display = r === 'metal' ? 'block' : 'none';
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 4: Roof sheathing sub-option ────────────────────
@@ -192,6 +197,7 @@ window.selectRoofSheathing = function(option) {
     el.querySelector('input').checked = (val === option);
   });
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 4: Gauge selection ───────────────────────────────
@@ -217,6 +223,7 @@ window.selectRoofColor = function(key, label, premium, tier) {
   document.querySelectorAll('.color-chip').forEach(el => {
     el.classList.toggle('selected', el.dataset.colorKey === key);
   });
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 5: Siding ───────────────────────────────────────
@@ -238,6 +245,7 @@ window.selectSiding = function(s) {
     window.selectWallSheathing(state.wallSheathingOption || 'none');
   }
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 5: Wall sheathing sub-option ────────────────────
@@ -251,6 +259,7 @@ window.selectWallSheathing = function(option) {
     el.querySelector('input').checked = (val === option);
   });
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 4: Ice & Water Shield ───────────────────────────
@@ -280,6 +289,7 @@ window.toggleIceWater = function() {
   if (cfg) cfg.style.display = chk.checked ? 'block' : 'none';
   updateIcwPreview();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.selectIceWaterCoverage = function(cov) {
@@ -290,12 +300,14 @@ window.selectIceWaterCoverage = function(cov) {
   });
   updateIcwPreview();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 7: Add-ons (qty, shelving, slab, loft) ─────────
 window.onQtyChange = function() {
   state.addons.ramps = parseInt(document.getElementById('qty-ramp').value) || 0;
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // Shelving
@@ -308,6 +320,7 @@ window.toggleShelving = function() {
   if (cfg) cfg.style.display = chk.checked ? 'block' : 'none';
   window.onShelvingChange();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.onShelvingChange = function() {
@@ -324,6 +337,7 @@ window.onShelvingChange = function() {
     prev.textContent = '';
   }
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // Slab / Foundation
@@ -342,6 +356,7 @@ window.toggleSlab = function() {
   }
   window.onSlabChange();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.toggleNoFloor = function() {
@@ -350,6 +365,7 @@ window.toggleNoFloor = function() {
   state.slab.noWoodFloor = chk.checked;
   document.getElementById('chk-nofloor-row').classList.toggle('selected', chk.checked);
   window.onSlabChange();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.onSlabChange = function() {
@@ -379,6 +395,7 @@ window.toggleLoft = function() {
   chk.checked = !chk.checked;
   state.loftRequested = chk.checked;
   document.getElementById('chk-loft-row').classList.toggle('selected', chk.checked);
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 8: Demo ─────────────────────────────────────────
@@ -391,6 +408,7 @@ window.selectDemo = function(enabled) {
   document.getElementById('demo-size-fields').style.display = enabled ? 'block' : 'none';
   if (enabled) updateDemoPreview();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 function updateDemoPreview() {

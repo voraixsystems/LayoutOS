@@ -496,7 +496,7 @@ export function buildQuote(inputs) {
       phone:   CONFIG.COMPANY_PHONE,
       website: CONFIG.COMPANY_WEBSITE,
     },
-    building: { style, width, length, sqft, wallHeight, roof, siding, conditioningLevel, roofPitch: CONFIG.ROOF_PITCH_LABEL,
+    building: { style, styleLabel: ANCHOR[style]?.label || style, width, length, sqft, wallHeight, roof, siding, conditioningLevel, roofPitch: CONFIG.ROOF_PITCH_LABEL,
       roofColor: inputs.roofColor || null, roofColorLabel },
     materials,
     conditioning,

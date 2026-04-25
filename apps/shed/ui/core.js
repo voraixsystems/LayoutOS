@@ -105,6 +105,7 @@ window.jumpStep = function(n) {
     el.classList.add('step-expanded');
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+  if (n === 10) window.rebuildPreview?.();
 };
 
 window.toggleStep = function(n) {
@@ -347,11 +348,18 @@ function buildStyleGrid() {
       const cvp = document.getElementById('carriage-variant-picker');
       if (cvp) cvp.style.display = s.key === 'carriage' ? 'block' : 'none';
       if (state.internalMode) window.renderFramingPanel();
+      if (state.step <= 1) {
+        state.internalMode ? window.jumpStep(2) : window.goStep(2);
+      } else {
+        window.renderStepNav();
+        saveDraft();
+      }
     });
     grid.appendChild(card);
   });
 }
 
 // ── Expose for inline handlers ────────────────────────────
+window.saveDraftFromStep = saveDraft;
 window.showStepError = showStepError;
 window.clearStepError = clearStepError;
