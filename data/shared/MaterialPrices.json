@@ -204,6 +204,11 @@
     }
   },
   "Pine": {
+    "1x4x8 SPF (Fir Strip)": {
+      "price": 3.34,
+      "sku": "684642",
+      "url": ""
+    },
     "1x4x8": {
       "price": 8.22,
       "sku": "",
@@ -271,7 +276,7 @@
       "sku": "509-095",
       "url": "https://www.homedepot.com/p/LP-SmartSide-LP-SmartSide-Cedar-Texture-8-in-OC-Panel-Engineered-Treated-Wood-Siding-8-in-Application-as-3-8-in-x-4-ft-x-8-ft-27874/100055901"
     },
-    "23/32 Advantch subfloor": {
+    "23/32 Advantech Subfloor": {
       "price": 59.75,
       "sku": "439-058",
       "url": "https://www.homedepot.com/p/Advantech-23-32-in-x-4-ft-x-8-ft-T-G-OSB-Underlayment-Panel-1012405/202084475"
@@ -303,6 +308,16 @@
       "sku": "",
       "url": "https://www.homedepot.com/p/GAF-Royal-Sovereign-Charcoal-Algae-Resistant-3-Tab-Roofing-Shingles-33-33-sq-ft-per-Bundle-26-Pieces-0201180/100040028"
     },
+    "15lb Felt (216 sqft)": {
+      "price": 34.97,
+      "sku": "D414-0",
+      "url": ""
+    },
+    "Ice & Water Shield": {
+      "price": 250,
+      "sku": "",
+      "url": ""
+    },
     "Drip Edge 10ft": {
       "price": 9.98,
       "sku": "",
@@ -312,6 +327,28 @@
       "price": 12.98,
       "sku": "",
       "url": "https://www.homedepot.com/p/GAF-Cobra-SnowCountry-11-5-in-x-48-in-Filtered-Plastic-Roof-Ridge-Exhaust-Vent-in-Black-2027000/100027903"
+    }
+  },
+  "WrapVapor": {
+    "Everbilt Woven House Wrap": {
+      "price": 120,
+      "sku": "",
+      "url": ""
+    },
+    "Tyvek HomeWrap 9x150ft": {
+      "price": 224,
+      "sku": "",
+      "url": ""
+    },
+    "Tyvek Tape 2x164ft": {
+      "price": 14.98,
+      "sku": "",
+      "url": ""
+    },
+    "VB Install (per roll)": {
+      "price": 85,
+      "sku": "",
+      "url": ""
     }
   },
   "Trims": {
@@ -407,11 +444,6 @@
       "sku": "",
       "url": "https://www.homedepot.com/p/Paslode-2-3-8-in-x-0-113-Gauge-30-Degree-Galvanized-Ring-Shank-Paper-Tape-Framing-Nails-2-000-per-Box-650383/100351707"
     },
-    "Block 16x8x1.75in": {
-      "price": 1.98,
-      "sku": "",
-      "url": "https://www.homedepot.com/p/16-in-x-8-in-x-1-75-in-Pewter-Concrete-Step-Stone-74000/202026920"
-    },
     "Hinge 6in": {
       "price": 8.27,
       "sku": "",
@@ -434,7 +466,7 @@
       "sku": "",
       "url": "https://www.homedepot.com/p/Quikrete-60-lb-Concrete-Mix-110160/100318478?MERCH=REC-_-fbt_test-_-206968441-_-3-_-n/a-_-n/a-_-n/a-_-n/a-_-n/a"
     },
-    "Rebar 10'": {
+    "Rebar 10ft": {
       "price": 8.3,
       "sku": "",
       "url": "https://www.homedepot.com/p/Weyerhaeuser-1-2-in-x-10-ft-4-Rebar-05366/202094293"
@@ -444,10 +476,15 @@
       "sku": "",
       "url": "https://www.homedepot.com/p/42-in-x-84-in-Remesh-Sheet-5901028/206261747"
     },
-    "10 Tube Form": {
+    "10in Tube Form": {
       "price": 14.48,
       "sku": "",
       "url": "https://www.homedepot.com/p/SAKRETE-10-in-x-48-in-Concrete-Form-Tube-65470006/100350260"
+    },
+    "Block 16x8x1.75in": {
+      "price": 1.98,
+      "sku": "",
+      "url": "https://www.homedepot.com/p/16-in-x-8-in-x-1-75-in-Pewter-Concrete-Step-Stone-74000/202026920"
     }
   },
   "Skipped": {

@@ -43,11 +43,11 @@ export const PRICES_FALLBACK = {
   zip_tape_roll:         34.95,  // MaterialPrices: Zip Tape 90ft roll
 
   vapor_barrier_roll:   150.00,  // UPDATE 2026-04-18: 35→150
-  felt_roll:             25.00,
-  house_wrap_roll:       80.00,
+  felt_roll:             34.97,  // UPDATE 2026-04-26: $25→$34.97 — HD #D414-0, 216 sqft/roll
+  house_wrap_roll:      120.00,  // UPDATE 2026-04-26: $80→$120 — Everbilt Woven House Wrap
 
-  fir_strip_per_lf:       0.75,  // required under metal panels over any sheathing — 24in OC
-  fir_strip_8ft:          4.00,  // 1×4×8ft furring board (framing panel uses board count, not LF)
+  fir_strip_per_lf:       0.42,  // UPDATE 2026-04-26: $0.75→$0.42 — 1x4x8 SPF #684642, batten 24in OC
+  fir_strip_8ft:          3.34,  // UPDATE 2026-04-26: $4→$3.34 — 1x4x8 SPF #684642 confirmed
 
   shingle_square:        43.47,
 
@@ -113,6 +113,9 @@ export const PRICES_FALLBACK = {
   '2x10x16_spf':  32.63,
   subfloor_sheet: 59.75,
   drip_edge_10ft:  9.98,
+  vapor_barrier_install: 85.00,  // UPDATE 2026-04-26: $150→$85 — install labor per roll
+  tyvek_9x15_roll:      224.00,  // added 2026-04-26 — 1350 sqft coverage
+  tyvek_tape_roll:       14.98,  // added 2026-04-26 — 2in x 164ft roll
 };
 
 // Call once on app init — tries fetch, falls back to inline.
