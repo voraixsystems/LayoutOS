@@ -241,8 +241,8 @@ window.generateQuote = function(directMode) {
   if (!state.internalMode) {
     const name = document.getElementById('cust-name').value.trim();
     if (!name) {
-      window.goStep(10);
-      window.showStepError(10, 'Your name is required to generate a quote.');
+      window.goStep(11);
+      window.showStepError(11, 'Your name is required to generate a quote.');
       return;
     }
     const letter = resolveEstimateLetter();
@@ -259,8 +259,8 @@ window.generateQuote = function(directMode) {
 window.openGenModal = function(directMode) {
   const name = document.getElementById('cust-name').value.trim();
   if (!name && !directMode && !state.internalMode) {
-    window.goStep(10);
-    window.showStepError(10, 'Customer name required before generating.');
+    window.goStep(11);
+    window.showStepError(11, 'Customer name required before generating.');
     return;
   }
 

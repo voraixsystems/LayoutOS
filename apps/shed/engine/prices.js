@@ -84,7 +84,11 @@ export const PRICES_FALLBACK = {
   framed_opening_12x7:   425.00,
   framed_opening_16x7:   500.00,
 
-  ramp_per_opening:      120.00,
+  ramp_per_opening:       120.00,  // legacy key
+  pt_decking_5x4_8ft:      9.68,  // WeatherShield 5/4x6x8ft PT SYP — HD — verified 2026-04-29
+  pt_decking_5x4_10ft:    12.08,  // WeatherShield 5/4x6x10ft PT SYP — HD — verified 2026-04-29
+  pt_decking_5x4_12ft:    14.48,  // WeatherShield 5/4x6x12ft PT SYP — HD — verified 2026-04-29
+  pt_decking_5x4_16ft:    19.38,  // WeatherShield 5/4x6x16ft PT SYP — HD SKU 206966950 — verified 2026-04-29
 
   ice_water_shield_roll: 250.00,  // self-adhering 36in × 75ft roll (~225 sqft coverage)
   roofing_nail_box:       59.00,  // 30# coil/box roofing nails ~7200 count — 320 nails/square

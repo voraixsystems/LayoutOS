@@ -244,6 +244,7 @@ window.selectSiding = function(s) {
   } else {
     window.selectWallSheathing(state.wallSheathingOption || 'none');
   }
+  window.renderShopDoorSection?.();
   if (state.internalMode) window.renderFramingPanel();
   if (state.internalMode) window.rebuildPreview?.();
 };
@@ -303,12 +304,7 @@ window.selectIceWaterCoverage = function(cov) {
   if (state.internalMode) window.rebuildPreview?.();
 };
 
-// ── Step 7: Add-ons (qty, shelving, slab, loft) ─────────
-window.onQtyChange = function() {
-  state.addons.ramps = parseInt(document.getElementById('qty-ramp').value) || 0;
-  if (state.internalMode) window.renderFramingPanel();
-  if (state.internalMode) window.rebuildPreview?.();
-};
+// ── Step 7: Windows & Doors / Step 8: Add-Ons ───────────
 
 // Shelving
 window.toggleShelving = function() {

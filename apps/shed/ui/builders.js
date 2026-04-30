@@ -211,6 +211,7 @@ function renderGarageDoorBuilder() {
 window.addGarageDoorRow = function() {
   state.garageDoorItems.push({ category: 'door', spec: '8x7_std', sealColor: 'white', keyedHandle: false, qty: 1 });
   renderGarageDoorBuilder();
+  renderRampSection();
 };
 
 window.removeGarageDoorRow = function(idx) {
@@ -233,10 +234,114 @@ window.updateGarageDoorRow = function(idx) {
     qty:         parseInt(document.getElementById(`gdr-qty-${idx}`)?.value) || 1,
   };
   renderGarageDoorBuilder();
+  renderRampSection();
   if (state.internalMode) window.renderFramingPanel();
 };
 
 window.renderGarageDoorBuilder = renderGarageDoorBuilder;
+
+// ── Wood Build Shop Doors ─────────────────────────────
+
+const SHOP_DOOR_ROWS = [
+  { width: 32, label: '32in Single' },
+  { width: 36, label: '36in Single' },
+  { width: 64, label: '64in Double' },
+  { width: 72, label: '72in Double' },
+];
+
+function renderShopDoorSection() {
+  const el = document.getElementById('shop-door-section');
+  if (!el) return;
+  const prices = state.siding === 'vinyl'
+    ? CONFIG.SHOP_DOOR_PRICES_VINYL
+    : CONFIG.SHOP_DOOR_PRICES_LP;
+  const sidingNote = state.siding === 'vinyl' ? 'vinyl pricing' : 'LP pricing';
+  el.innerHTML = SHOP_DOOR_ROWS.map(r => {
+    const qty = state.shopDoors[r.width] || 0;
+    return `<div class="qty-row">
+      <label>${r.label} — Wood Build Shop Door</label>
+      <input type="number" id="shop-door-${r.width}" value="${qty}" min="0" max="4"
+             onchange="onShopDoorChange()">
+      <span class="qty-note">${formatMoney(prices[r.width])} / set &nbsp;<span style="color:var(--muted);font-size:11px">(${sidingNote})</span></span>
+    </div>`;
+  }).join('');
+}
+
+window.onShopDoorChange = function() {
+  SHOP_DOOR_ROWS.forEach(r => {
+    state.shopDoors[r.width] = parseInt(document.getElementById(`shop-door-${r.width}`)?.value) || 0;
+  });
+  renderRampSection();
+  if (state.internalMode) window.rebuildPreview?.();
+};
+
+window.renderShopDoorSection = renderShopDoorSection;
+
+// ── Ramps ─────────────────────────────────────────────
+
+function getAvailableRamps() {
+  const slots = [];
+  // Shop door ramps
+  SHOP_DOOR_ROWS.forEach(r => {
+    if ((state.shopDoors[r.width] || 0) > 0) {
+      slots.push({ key: `shop_${r.width}`, sourceType: 'shop', width: r.width,
+        label: `${r.label} Shop Door`, framing: '2×4 PT' });
+    }
+  });
+  // Garage door ramps — one slot per unique width
+  const gdWidths = new Set();
+  (state.garageDoorItems || []).forEach(item => {
+    const w = parseInt((item.spec || '').split('x')[0]);
+    if (w && !gdWidths.has(w)) {
+      gdWidths.add(w);
+      slots.push({ key: `gd_${w}`, sourceType: 'gd', width: w,
+        label: `${w}ft Garage Door`, framing: '2×6 PT' });
+    }
+  });
+  return slots;
+}
+
+function renderRampSection() {
+  const el = document.getElementById('ramp-section');
+  if (!el) return;
+  const slots = getAvailableRamps();
+  if (!slots.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:6px 0">Add shop doors or garage doors in Step 7 to configure ramps.</div>';
+    return;
+  }
+  el.innerHTML = slots.map(s => {
+    const saved  = state.rampSelections[s.key] || { qty: 0, length: 4 };
+    const pTable = s.sourceType === 'shop' ? CONFIG.RAMP_PRICES_SHOP : CONFIG.RAMP_PRICES_GD;
+    const pRow   = pTable?.[s.width] || {};
+    const price  = pRow[saved.length] || 0;
+    const flag   = s.width === 32 ? '<span style="font-size:11px;color:var(--amber);margin-left:6px">⚑ uncommon — verify with customer</span>' : '';
+    return `<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;padding:10px;background:#f9fafb;border:1px solid var(--border);border-radius:5px">
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:13px;font-weight:600">${s.label}${flag}</div>
+        <div style="font-size:12px;color:var(--muted)">${s.framing} framing · PT 5/4 decking</div>
+      </div>
+      <select id="ramp-len-${s.key}" onchange="onRampChange('${s.key}')"
+              style="padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit">
+        <option value="4" ${saved.length === 4 ? 'selected' : ''}>4ft ramp</option>
+        <option value="6" ${saved.length === 6 ? 'selected' : ''}>6ft ramp (+premium)</option>
+      </select>
+      <input type="number" id="ramp-qty-${s.key}" value="${saved.qty}" min="0" max="4"
+             onchange="onRampChange('${s.key}')"
+             style="width:60px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px">
+      <span style="font-size:12px;font-weight:700;color:var(--green);min-width:60px;text-align:right">${saved.qty > 0 ? formatMoney(price * saved.qty) : '—'}</span>
+    </div>`;
+  }).join('');
+}
+
+window.onRampChange = function(key) {
+  const length = parseInt(document.getElementById(`ramp-len-${key}`)?.value) || 4;
+  const qty    = parseInt(document.getElementById(`ramp-qty-${key}`)?.value) || 0;
+  state.rampSelections[key] = { qty, length };
+  renderRampSection();
+  if (state.internalMode) window.rebuildPreview?.();
+};
+
+window.renderRampSection = renderRampSection;
 
 // Delegated remove handler
 document.addEventListener('click', e => {
@@ -253,6 +358,7 @@ document.addEventListener('click', e => {
   } else if (type === 'garage-door') {
     state.garageDoorItems.splice(idx, 1);
     renderGarageDoorBuilder();
+    renderRampSection();
     if (state.internalMode) window.renderFramingPanel();
   }
 });

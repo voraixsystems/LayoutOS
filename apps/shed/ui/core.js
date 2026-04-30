@@ -58,6 +58,8 @@ export const state = {
   manDoorItems: [],
   windowItems: [],
   garageDoorItems: [],
+  shopDoors: { 32: 0, 36: 0, 64: 0, 72: 0 },
+  rampSelections: {},  // { 'shop_32': { qty, length }, 'gd_8': { qty, length }, ... }
   shelvingSpec: { enabled: false, linearFt: 0, material: 'osb' },
   loftRequested: false,
   slab: { enabled: false, ratePerSqft: 13, noWoodFloor: false },
@@ -71,8 +73,8 @@ export const state = {
 // ── Step nav ─────────────────────────────────────────────
 const STEP_LABELS = {
   1:'Style', 2:'Size', 3:'Wall Ht', 4:'Roofing',
-  5:'Siding', 6:'Foundation', 7:'Add-Ons',
-  8:'Demo', 9:'Customer', 10:'Summary',
+  5:'Siding', 6:'Foundation', 7:'Win & Doors',
+  8:'Add-Ons', 9:'Demo', 10:'Customer', 11:'Summary',
 };
 
 function isStepDone(n) {
@@ -105,7 +107,7 @@ window.jumpStep = function(n) {
     el.classList.add('step-expanded');
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  if (n === 10) window.rebuildPreview?.();
+  if (n === 11) window.rebuildPreview?.();
 };
 
 window.toggleStep = function(n) {
@@ -229,6 +231,8 @@ window.resumeDraft = function() {
   const saved = JSON.parse(raw);
   Object.assign(state, saved);
   restoreStateToUI();
+  window.renderShopDoorSection?.();
+  window.renderRampSection?.();
   const target = saved.step || 1;
   if (state.internalMode) {
     window.renderStepNav();
@@ -242,8 +246,9 @@ window.resumeDraft = function() {
 
 // ── Init ─────────────────────────────────────────────────
 await loadPrices();
-document.getElementById('price-ramp').textContent = `$${CONFIG.ADDON_RAMP_PER_OPENING} per opening`;
 buildStyleGrid();
+window.renderShopDoorSection?.();
+window.renderRampSection?.();
 updateProgress();
 updateDraftFooter();
 
@@ -297,7 +302,7 @@ window.goStep = function(n) {
   document.getElementById('s' + n).classList.add('active');
   if (state.internalMode) document.getElementById('s' + n)?.classList.add('step-expanded');
   updateProgress();
-  if (n === 10) window.rebuildPreview();
+  if (n === 11) window.rebuildPreview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   saveDraft();
   window.renderStepNav();

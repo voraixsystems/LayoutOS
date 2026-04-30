@@ -140,7 +140,27 @@ export const CONFIG = {
   ADDON_WINDOW_SINGLE_HUNG:  null,       // 24x30 Single Hung — Project Source Lowes
   ADDON_WINDOW_SLIDING:      null,       // 36x36 Sliding — Project Source Lowes
   ADDON_GARAGE_DOOR_INSTALL: null,       // install labor only — verify HD material price
-  ADDON_RAMP_PER_OPENING:    null,       // per 60in opening, PT lumber
+  ADDON_RAMP_PER_OPENING:    null,       // legacy — replaced by RAMP_PRICES_SHOP / RAMP_PRICES_GD
+
+  // Wood Build Shop Door sell prices — siding-aware (additional set; one set included in base)
+  SHOP_DOOR_PRICES_VINYL: { 32: 170, 36: 185, 64: 320, 72: 350 },
+  SHOP_DOOR_PRICES_LP:    { 32: 133, 36: 148, 64: 245, 72: 275 },
+
+  // Ramp sell prices by door width (in) and ramp length (ft) — shop doors use 2x4 PT
+  RAMP_PRICES_SHOP: {
+    32: { 4:  85, 6: 110 },
+    36: { 4:  90, 6: 115 },
+    64: { 4: 110, 6: 140 },
+    72: { 4: 120, 6: 150 },
+  },
+  // GD ramps — 2x6 PT framing, keyed by GD width in feet
+  RAMP_PRICES_GD: {
+     8: { 4: 160, 6: 195 },
+     9: { 4: 175, 6: 210 },
+    10: { 4: 190, 6: 225 },
+    12: { 4: 215, 6: 260 },
+    16: { 4: 250, 6: 300 },
+  },
   ADDON_PREMIUM_PLYWOOD:     null,       // 3/4in BC plywood — shelving upgrade
   ADDON_OSB_SHEET:           null,       // OSB — volatile, verify before quoting
 

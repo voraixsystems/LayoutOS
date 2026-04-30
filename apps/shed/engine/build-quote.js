@@ -125,6 +125,8 @@ export function buildQuote(inputs) {
     slab,
     iceWater,
     garageDoorItems,
+    shopDoors,
+    rampSelections,
   } = inputs;
 
   const sqft      = width * length;
@@ -350,14 +352,47 @@ export function buildQuote(inputs) {
     });
   });
 
-  if (addons && addons.ramps > 0) {
-    const price = applyOverride(priceOverrides, 'ramp', CONFIG.ADDON_RAMP_PER_OPENING);
-    lineItems.push({
-      id: 'ramp',
-      qty: addons.ramps,
-      description: 'Ramp — PT lumber, per 60in opening',
-      unitPrice: price,
-      total: price * addons.ramps,
+  // ── Add-ons: Wood Build Shop Doors ────────────────────
+  const shopDoorPrices = siding === 'vinyl'
+    ? CONFIG.SHOP_DOOR_PRICES_VINYL
+    : CONFIG.SHOP_DOOR_PRICES_LP;
+  const shopDoorLabels = { 32: '32in Single', 36: '36in Single', 64: '64in Double', 72: '72in Double' };
+  if (shopDoors) {
+    [32, 36, 64, 72].forEach(w => {
+      const qty = shopDoors[w] || 0;
+      if (qty < 1) return;
+      const unitPrice = applyOverride(priceOverrides, `shop_door_${w}`, shopDoorPrices[w] || 0);
+      lineItems.push({
+        id: `shop_door_${w}`,
+        qty,
+        description: `${shopDoorLabels[w]} Wood Build Shop Door — ${siding === 'vinyl' ? 'vinyl' : 'LP'} inlay`,
+        unitPrice,
+        total: unitPrice * qty,
+      });
+    });
+  }
+
+  // ── Add-ons: Ramps ────────────────────────────────────
+  if (rampSelections) {
+    Object.entries(rampSelections).forEach(([key, sel]) => {
+      if (!sel || (sel.qty || 0) < 1) return;
+      const isGD    = key.startsWith('gd_');
+      const width   = parseInt(key.split('_')[1]);
+      const length  = sel.length || 4;
+      const pTable  = isGD ? CONFIG.RAMP_PRICES_GD : CONFIG.RAMP_PRICES_SHOP;
+      const unitPrice = applyOverride(priceOverrides, `ramp_${key}_${length}`,
+        pTable?.[width]?.[length] || 0);
+      const framing = isGD ? '2×6 PT' : '2×4 PT';
+      const srcLabel = isGD
+        ? `${width}ft Garage Door`
+        : `${shopDoorLabels[width] || width + 'in'} Shop Door`;
+      lineItems.push({
+        id: `ramp_${key}_${length}`,
+        qty: sel.qty,
+        description: `${length}ft Ramp — ${srcLabel} · ${framing} framing · PT decking`,
+        unitPrice,
+        total: unitPrice * sel.qty,
+      });
     });
   }
 

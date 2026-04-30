@@ -12,6 +12,7 @@
 <div id="app-header">
   <span class="brand-sub">LayoutOS</span>
   <span class="brand-main">Shed Estimator</span>
+  <span style="font-size:10px;color:#9ca3af;margin-left:4px;align-self:flex-end;padding-bottom:2px">v1.2</span>
   <span id="int-badge">⬡ INTERNAL MODE</span>
   <span id="dev-badge">⬡ DEV MODE</span>
 </div>
@@ -350,13 +351,13 @@
     </div>
   </div>
 
-  <!-- ── STEP 7: Add-Ons ──────────────────────────── -->
+  <!-- ── STEP 7: Windows & Doors ──────────────────── -->
   <div class="step-card" id="s7">
-    <div class="step-title">Step 7 — Add-Ons</div>
+    <div class="step-title">Step 7 — Windows &amp; Doors</div>
 
-    <!-- Man Doors -->
+    <!-- Manufactured Man Doors -->
     <div class="opt-group">
-      <div class="opt-group-title">Man Doors</div>
+      <div class="opt-group-title">Manufactured Man Doors</div>
       <div id="man-door-builder">
         <div style="font-size:13px;color:var(--muted);padding:8px 0">No man doors added. Click below to add one.</div>
       </div>
@@ -389,15 +390,27 @@
       </div>
     </div>
 
+    <!-- Wood Build Shop Doors -->
+    <div class="opt-group">
+      <div class="opt-group-title">Wood Build Shop Doors</div>
+      <div class="opt-sub" style="margin-bottom:10px">One set included with base shed — pricing below is for <strong>additional sets</strong>. Aluminum-wrapped vinyl inlay. Price varies by siding selection.</div>
+      <div id="shop-door-section"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(6)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(8)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 8: Add-Ons ───────────────────────────── -->
+  <div class="step-card" id="s8">
+    <div class="step-title">Step 8 — Add-Ons</div>
+
     <!-- Ramps -->
     <div class="opt-group">
       <div class="opt-group-title">Ramps</div>
-      <div class="qty-row">
-        <label>Ramp (per 60in opening)</label>
-        <input type="number" id="qty-ramp" value="0" min="0" max="4"
-               onchange="onQtyChange()">
-        <span class="qty-note" id="price-ramp">$120 per opening</span>
-      </div>
+      <div id="ramp-section"></div>
     </div>
 
     <!-- Shelving -->
@@ -443,35 +456,27 @@
       </div>
     </div>
 
-    <!-- ── Dev: future add-on placeholders ──────────── -->
-    <div class="dev-placeholder-group">
-      <div class="opt-group-title" style="color:var(--amber)">Future Add-Ons</div>
-      <div class="dev-placeholder-item">
-        <strong>Electrical Rough-In</strong>
-        <span>Panel + circuits — quoted per scope</span>
-        <span class="dev-ph-badge">NOT ACTIVE</span>
-      </div>
-      <div class="dev-placeholder-item">
-        <strong>Paint / Stain</strong>
-        <span>Exterior finish — depends on siding type</span>
-        <span class="dev-ph-badge">NOT ACTIVE</span>
-      </div>
-      <div class="dev-placeholder-item">
-        <strong>Custom Size</strong>
-        <span>Non-standard footprints — manual override only</span>
-        <span class="dev-ph-badge">NOT ACTIVE</span>
+    <!-- Gutters -->
+    <div class="opt-group">
+      <div class="opt-group-title">Gutters</div>
+      <div class="opt-row" style="cursor:default;opacity:0.7">
+        <div>
+          <div class="opt-label">Gutter Installation</div>
+          <div class="opt-sub">Contact us for pricing — availability varies by style and site.</div>
+        </div>
+        <div class="opt-price tbd">Contact</div>
       </div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goStep(6)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(8)">Next →</button>
+      <button class="btn btn-secondary" onclick="goStep(7)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(9)">Next →</button>
     </div>
   </div>
 
-  <!-- ── STEP 8: Demo ────────────────────────────────── -->
-  <div class="step-card" id="s8">
-    <div class="step-title">Step 8 — Demo Existing Shed?</div>
+  <!-- ── STEP 9: Demo ────────────────────────────────── -->
+  <div class="step-card" id="s9">
+    <div class="step-title">Step 9 — Demo Existing Shed?</div>
     <div class="opt-row" id="demo-no-row" onclick="selectDemo(false)">
       <input type="radio" name="demo-radio" value="no" checked>
       <div><div class="opt-label">No demo needed</div></div>
@@ -520,14 +525,14 @@
       <div id="demo-price-preview" class="notice notice-info" style="margin-top:8px"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goStep(7)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(9)">Next →</button>
+      <button class="btn btn-secondary" onclick="goStep(8)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(10)">Next →</button>
     </div>
   </div>
 
-  <!-- ── STEP 9: Customer Info ──────────────────────── -->
-  <div class="step-card" id="s9">
-    <div class="step-title">Step 9 — Customer Information</div>
+  <!-- ── STEP 10: Customer Info ──────────────────────── -->
+  <div class="step-card" id="s10">
+    <div class="step-title">Step 10 — Customer Information</div>
     <div class="field">
       <label for="cust-name">Name *</label>
       <input type="text" id="cust-name" placeholder="Full name" oninput="onNameChange()">
@@ -549,14 +554,14 @@
     <div id="est-number-preview" class="notice notice-info" style="margin-top:8px"></div>
     <div id="s9-error" class="field-error"></div>
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goStep(8)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(10)">Preview Quote →</button>
+      <button class="btn btn-secondary" onclick="goStep(9)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(11)">Preview Quote →</button>
     </div>
   </div>
 
-  <!-- ── STEP 10: Summary + Generate ───────────────── -->
-  <div class="step-card" id="s10">
-    <div class="step-title">Step 10 — Quote Summary</div>
+  <!-- ── STEP 11: Summary + Generate ───────────────── -->
+  <div class="step-card" id="s11">
+    <div class="step-title">Step 11 — Quote Summary</div>
 
     <!-- Internal mode panel -->
     <div id="internal-panel">
@@ -659,7 +664,7 @@
     <div id="quote-preview"></div>
 
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goStep(9)">← Back</button>
+      <button class="btn btn-secondary" onclick="goStep(10)">← Back</button>
       <button class="btn btn-green" id="btn-generate" onclick="generateQuote()">Get My Quote →</button>
       <button class="btn btn-internal" id="int-direct-btn" style="display:none"
               onclick="generateQuote(true)">⬡ Internal Generate</button>

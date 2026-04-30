@@ -5,7 +5,7 @@
 // Flip a step from 'internal' → 'live' when it's ready for clients.
 // 'hidden' removes it entirely (even in internal mode).
 
-export const TOTAL_STEPS = 10;
+export const TOTAL_STEPS = 11;
 
 export const STEP_VISIBILITY = {
   1:  'live',      // Style
@@ -14,10 +14,11 @@ export const STEP_VISIBILITY = {
   4:  'live',      // Roofing
   5:  'live',      // Siding
   6:  'internal',  // Foundation / Slab  ← internal-only until pricing finalised
-  7:  'live',      // Add-Ons
-  8:  'live',      // Demo Existing Shed
-  9:  'live',      // Customer Information
-  10: 'live',      // Quote Summary
+  7:  'live',      // Windows & Doors
+  8:  'live',      // Add-Ons
+  9:  'live',      // Demo Existing Shed
+  10: 'live',      // Customer Information
+  11: 'live',      // Quote Summary
 };
 
 export function isStepVisible(stepNum, isInternalMode) {

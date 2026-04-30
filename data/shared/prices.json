@@ -1,10 +1,11 @@
 {
   "_comment": "LayoutOS material price reference — UPDATE THIS FILE WHEN PRICES CHANGE",
-  "_last_updated": "2026-04-26",
+  "_last_updated": "2026-04-29",
   "_source": "MaterialPrices.json + current market",
   "_updates": {
     "2026-04-16": "osb_7_16_sheet 14.55→13 (add osb_sheet alias); zip_wall_sheet 40.20→45; zip_roof_sheet 52.36→60; add metal_panel_per_lf alias; add premium_plywood_sheet; add man_door_solid/9lite/fanlite; add window_single_hung/sliding",
-    "2026-04-26": "felt_roll $25→$34.97 (confirmed HD #D414-0, 216sqft); fir_strip_per_lf $0.75→$0.42 (corrected to 1x4x8 SPF #684642 product price); fir_strip_8ft $4→$3.34 (confirmed); house_wrap_roll $80→$120 (Everbilt Woven House Wrap); vapor_barrier_install $150→$85 (labor per roll); add tyvek_9x15_roll, tyvek_tape_roll"
+    "2026-04-26": "felt_roll $25→$34.97 (confirmed HD #D414-0, 216sqft); fir_strip_per_lf $0.75→$0.42 (corrected to 1x4x8 SPF #684642 product price); fir_strip_8ft $4→$3.34 (confirmed); house_wrap_roll $80→$120 (Everbilt Woven House Wrap); vapor_barrier_install $150→$85 (labor per roll); add tyvek_9x15_roll, tyvek_tape_roll",
+    "2026-04-29": "add pt_decking_5x4_8/10/12/16ft — WeatherShield 5/4x6 Ground Contact PT SYP — Home Depot SKU 206966950 (16ft base)"
   },
   "lp_smartside_sheet": 48.5,
   "osb_7_16_sheet": 13,
@@ -68,6 +69,10 @@
   "4x4x10_pt": 17.58,
   "4x4x12_pt": 21.98,
   "4x4x16_pt": 28.28,
+  "pt_decking_5x4_8ft":   9.68,
+  "pt_decking_5x4_10ft": 12.08,
+  "pt_decking_5x4_12ft": 14.48,
+  "pt_decking_5x4_16ft": 19.38,
   "subfloor_sheet": 59.75,
   "drip_edge_10ft": 9.98,
   "vapor_barrier_install": 85,
@@ -112,7 +117,11 @@
     "framed_opening_10x7": "Framed opening 10x7",
     "framed_opening_12x7": "Framed opening 12x7 — LVL header, load-bearing note applies",
     "framed_opening_16x7": "Framed opening 16x7 — double LVL, structural upgrade likely",
-    "ramp_per_opening": "Per 60in opening, PT lumber ramp",
+    "ramp_per_opening": "Legacy — per 60in opening PT lumber ramp. Replaced by RAMP_PRICES_SHOP / RAMP_PRICES_GD in config.js",
+    "pt_decking_5x4_8ft":   "WeatherShield 5/4x6x8ft Ground Contact PT SYP — HD SKU 206967716 (8ft) — verified 2026-04-29",
+    "pt_decking_5x4_10ft":  "WeatherShield 5/4x6x10ft Ground Contact PT SYP — HD — verified 2026-04-29",
+    "pt_decking_5x4_12ft":  "WeatherShield 5/4x6x12ft Ground Contact PT SYP — HD SKU 206967716 variant — verified 2026-04-29",
+    "pt_decking_5x4_16ft":  "WeatherShield 5/4x6x16ft Ground Contact PT SYP — HD SKU 206966950 — verified 2026-04-29",
     "vapor_barrier_install": "Install labor per roll — $85. Roll material cost is separate (house_wrap_roll $120). UPDATE 2026-04-26: $150→$85",
     "tyvek_9x15_roll": "Tyvek HomeWrap 9ft x 150ft roll — 1350 sqft coverage. Added 2026-04-26",
     "tyvek_tape_roll": "Tyvek tape, 2in x 164ft roll — seam sealing for Tyvek wrap installation. Added 2026-04-26"

@@ -382,7 +382,7 @@ function activateDevMode() {
   panel.classList.add('expanded');
   document.getElementById('dev-flag-toggle').textContent = '▲ collapse';
   buildDevFlags();
-  if (state.step === 10) window.rebuildPreview();
+  if (state.step === 11) window.rebuildPreview();
   window.scrollTo({ top: 0 });
 }
 
