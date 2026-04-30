@@ -205,6 +205,31 @@ export function buildQuote(inputs) {
     isBase: true,
   });
 
+  // 10ft wall upgrade
+  if (wallHeight === 10) {
+    const mat8        = calculateMaterials(width, length, 8, style);
+    const extraSheets = Math.max(0, materials.lpSheets - mat8.lpSheets);
+    if (extraSheets > 0) {
+      const matCost = extraSheets * CONFIG.LP_SMARTSIDE_PRICE_PER_SHEET;
+      lineItems.push({
+        id: 'wall_10ft_materials',
+        qty: extraSheets,
+        description: `10ft wall upgrade — extra LP siding (${extraSheets} sheets)`,
+        unitPrice: CONFIG.LP_SMARTSIDE_PRICE_PER_SHEET,
+        total: applyOverride(priceOverrides, 'wall_10ft_materials', matCost),
+      });
+    }
+    const perimeter   = 2 * (width + length);
+    const laborCost   = Math.round(perimeter * CONFIG.WALL_10FT_UPCHARGE_PER_LF);
+    lineItems.push({
+      id: 'wall_10ft_labor',
+      qty: perimeter,
+      description: `10ft wall upgrade — labor & stud upgrade (${perimeter} LF)`,
+      unitPrice: CONFIG.WALL_10FT_UPCHARGE_PER_LF,
+      total: applyOverride(priceOverrides, 'wall_10ft_labor', laborCost),
+    });
+  }
+
   // Vinyl upgrade
   if (vinylAddon > 0) {
     lineItems.push({

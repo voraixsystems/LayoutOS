@@ -939,3 +939,87 @@ body.internal-mode #step-nav.collapsed #step-nav-toggle { transform: rotate(180d
 .snav-item.snav-current .snav-num  { background: var(--internal); color: #fff; }
 .snav-item.snav-current .snav-label { color: var(--internal); font-weight: 700; }
 .cv-btn.selected { border-color: var(--blue) !important; background: var(--blue-lt, #eff6ff) !important; }
+
+/* ── Floating price widget ──────────────────────────────── */
+#price-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 8000;
+  background: var(--blue-dk);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 14px 12px;
+  min-width: 220px;
+  min-height: 80px;
+  max-width: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,.28);
+  user-select: none;
+  cursor: default;
+  resize: both;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#pw-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.25) transparent;
+}
+#pw-body::-webkit-scrollbar { width: 4px; }
+#pw-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 2px; }
+#price-widget-drag {
+  cursor: grab;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .55;
+  margin-bottom: 8px;
+}
+#price-widget-drag:active { cursor: grabbing; }
+.pw-header {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: .8;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.pw-items {
+  border-top: 1px solid rgba(255,255,255,.15);
+  padding-top: 6px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pw-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  opacity: .85;
+  gap: 10px;
+}
+.pw-row span:last-child { white-space: nowrap; flex-shrink: 0; }
+.pw-total {
+  border-top: 1px solid rgba(255,255,255,.25);
+  padding-top: 7px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  flex-shrink: 0;
+}
+.pw-total span:first-child {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .6;
+  align-self: flex-end;
+  padding-bottom: 2px;
+}

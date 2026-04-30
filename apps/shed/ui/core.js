@@ -131,118 +131,6 @@ function activateStepCollapse() {
   document.getElementById('s' + state.step)?.classList.add('step-expanded');
 }
 
-// ── Draft autosave ───────────────────────────────────────
-const DRAFT_KEY = 'shed_draft';
-
-function saveDraft() {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
-  updateDraftFooter();
-}
-
-window.deleteDraft = function() {
-  localStorage.removeItem(DRAFT_KEY);
-  updateDraftFooter();
-};
-
-function updateDraftFooter() {
-  const el = document.getElementById('footer-draft-link');
-  if (!el) return;
-  const raw = localStorage.getItem(DRAFT_KEY);
-  el.style.display = (raw && JSON.parse(raw).step >= 5) ? 'inline' : 'none';
-}
-
-function restoreSizeDropdowns(savedWidth, savedLength) {
-  if (!state.style) return;
-  const widths = getValidWidths(state.style);
-  const wSel = document.getElementById('sel-width');
-  wSel.innerHTML = widths.map(w => `<option value="${w}">${w} ft</option>`).join('');
-  state.width = widths.includes(savedWidth) ? savedWidth : widths[0];
-  wSel.value = state.width;
-  const lengths = getValidLengths(state.style, state.width);
-  const lSel = document.getElementById('sel-length');
-  lSel.innerHTML = lengths.map(l => `<option value="${l}">${l} ft</option>`).join('');
-  state.length = lengths.includes(savedLength) ? savedLength : lengths[0];
-  lSel.value = state.length;
-}
-
-function restoreStateToUI() {
-  buildStyleGrid();
-  if (state.style && state.width && state.length) restoreSizeDropdowns(state.width, state.length);
-  // Wall height
-  ['8','10'].forEach(h => {
-    const row = document.getElementById('wh-' + h);
-    if (!row) return;
-    row.classList.toggle('selected', state.wallHeight === parseInt(h));
-    const inp = row.querySelector('input');
-    if (inp) inp.checked = state.wallHeight === parseInt(h);
-  });
-  // Roof type
-  ['shingle','metal'].forEach(r => {
-    const row = document.getElementById('roof-' + r);
-    if (!row) return;
-    row.classList.toggle('selected', state.roof === r);
-    const inp = row.querySelector('input');
-    if (inp) inp.checked = state.roof === r;
-  });
-  const metalOpts = document.getElementById('metal-roof-options');
-  const shingleOpts = document.getElementById('shingle-color-options');
-  if (metalOpts) metalOpts.style.display = state.roof === 'metal' ? 'block' : 'none';
-  if (shingleOpts) shingleOpts.style.display = state.roof === 'shingle' ? 'block' : 'none';
-  // Roof sheathing
-  [['none','none'],['vb','vb_only'],['osb','osb'],['zip','zip']].forEach(([id, key]) => {
-    const row = document.getElementById('rso-' + id);
-    if (!row) return;
-    row.classList.toggle('selected', state.roofSheathingOption === key);
-    const inp = row.querySelector('input');
-    if (inp) inp.checked = state.roofSheathingOption === key;
-  });
-  // Siding
-  ['lp','vinyl'].forEach(s => {
-    const row = document.getElementById('siding-' + s);
-    if (!row) return;
-    row.classList.toggle('selected', state.siding === s);
-    const inp = row.querySelector('input');
-    if (inp) inp.checked = state.siding === s;
-  });
-  const vinylOpts = document.getElementById('vinyl-wall-options');
-  if (vinylOpts) vinylOpts.style.display = state.siding === 'vinyl' ? 'block' : 'none';
-  // Wall sheathing
-  [['none','none'],['hw','house_wrap'],['zip','zip']].forEach(([id, key]) => {
-    const row = document.getElementById('wso-' + id);
-    if (!row) return;
-    row.classList.toggle('selected', state.wallSheathingOption === key);
-    const inp = row.querySelector('input');
-    if (inp) inp.checked = state.wallSheathingOption === key;
-  });
-  // Customer fields
-  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
-  setVal('cust-name', state.customer.name);
-  setVal('cust-addr', state.customer.address);
-  setVal('cust-email', state.customer.email);
-  setVal('cust-phone', state.customer.phone);
-  // Carriage variant
-  const cvp = document.getElementById('carriage-variant-picker');
-  if (cvp) cvp.style.display = state.style === 'carriage' ? 'block' : 'none';
-}
-
-window.resumeDraft = function() {
-  const raw = localStorage.getItem(DRAFT_KEY);
-  if (!raw) return;
-  const saved = JSON.parse(raw);
-  Object.assign(state, saved);
-  restoreStateToUI();
-  window.renderShopDoorSection?.();
-  window.renderRampSection?.();
-  const target = saved.step || 1;
-  if (state.internalMode) {
-    window.renderStepNav();
-    window.jumpStep(target);
-  } else {
-    document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
-    document.getElementById('s' + target)?.classList.add('active');
-    updateProgress();
-  }
-};
 
 // ── Init ─────────────────────────────────────────────────
 await loadPrices();
@@ -250,7 +138,6 @@ buildStyleGrid();
 window.renderShopDoorSection?.();
 window.renderRampSection?.();
 updateProgress();
-updateDraftFooter();
 
 // ── Keyboard listeners: LAYOUT (internal) + DEVMODE ─────
 let keyBuf = '';
@@ -304,7 +191,6 @@ window.goStep = function(n) {
   updateProgress();
   if (n === 11) window.rebuildPreview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  saveDraft();
   window.renderStepNav();
 };
 
@@ -348,6 +234,9 @@ function buildStyleGrid() {
       document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       state.style = s.key;
+      state.priceOverrides = {};
+      const overrideList = document.getElementById('override-list');
+      if (overrideList) overrideList.innerHTML = '';
       clearStepError(1);
       window.populateSizeDropdowns();
       const cvp = document.getElementById('carriage-variant-picker');
@@ -357,7 +246,6 @@ function buildStyleGrid() {
         state.internalMode ? window.jumpStep(2) : window.goStep(2);
       } else {
         window.renderStepNav();
-        saveDraft();
       }
     });
     grid.appendChild(card);
@@ -365,6 +253,5 @@ function buildStyleGrid() {
 }
 
 // ── Expose for inline handlers ────────────────────────────
-window.saveDraftFromStep = saveDraft;
 window.showStepError = showStepError;
 window.clearStepError = clearStepError;

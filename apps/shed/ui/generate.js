@@ -32,6 +32,7 @@ function rebuildPreview() {
   });
   quote._internalMode = !!state.internalMode;
 
+  window.updatePriceWidgetFull?.(quote);
   renderPreview(quote);
   if (state.internalMode) {
     state._lastQuoteTotal = quote.pricing?.total ?? null;
@@ -385,7 +386,6 @@ window.confirmGenModal = function() {
   window.closeGenModal();
   logQuote(quote, 'shed');
   incrementEstimateCounter();
-  window.deleteDraft?.();
 
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(quote))));
   localStorage.setItem('layoutos_current_quote', JSON.stringify(quote));

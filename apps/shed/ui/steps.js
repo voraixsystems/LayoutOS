@@ -5,7 +5,7 @@
 
 import { state } from './core.js';
 import {
-  CONFIG, getBasePrice, calculateVinylAddon, calculateDemoPrice,
+  CONFIG, ANCHOR, getBasePrice, calculateVinylAddon, calculateDemoPrice,
   calculateShelving, getLoftAvailability, formatMoney,
   getValidWidths, getValidLengths, calculateMaterials, getPrices,
 } from '../shed-logic.js';
@@ -14,25 +14,31 @@ import { getNextEstimateNumber } from '../../../core/layoutos-core.js';
 // ── Step 2: Size dropdowns ───────────────────────────────
 function populateSizeDropdowns() {
   if (!state.style) return;
-  const widths  = getValidWidths(state.style);
-  const wSel    = document.getElementById('sel-width');
-
+  const widths = getValidWidths(state.style);
+  const wSel   = document.getElementById('sel-width');
   wSel.innerHTML = widths.map(w => `<option value="${w}">${w} ft</option>`).join('');
-  state.width = widths[0];
+  state.width = widths.includes(state.width) ? state.width : widths[0];
   wSel.value = state.width;
   onWidthChange();
-
   updateSizeInfo();
 }
 
 window.onWidthChange = function() {
   state.width = parseInt(document.getElementById('sel-width').value);
+  state.priceOverrides = {};
+  const overrideList = document.getElementById('override-list');
+  if (overrideList) overrideList.innerHTML = '';
   const lengths = getValidLengths(state.style, state.width);
   const lSel = document.getElementById('sel-length');
   lSel.innerHTML = lengths.map(l => `<option value="${l}">${l} ft</option>`).join('');
-  state.length = lengths[0];
+  state.length = lengths.includes(state.length) ? state.length : lengths[0];
   lSel.value = state.length;
-  lSel.addEventListener('change', () => { state.length = parseInt(lSel.value); updateSizeInfo(); });
+  lSel.addEventListener('change', () => {
+    state.length = parseInt(lSel.value);
+    state.priceOverrides = {};
+    if (overrideList) overrideList.innerHTML = '';
+    updateSizeInfo();
+  });
   updateSizeInfo();
 };
 
@@ -53,14 +59,89 @@ function updateSizeInfo() {
   }
 
   updateLoftAvailability();
+  updatePriceWidget(price, sqft);
 
   if (state.internalMode) window.renderFramingPanel();
   if (state.internalMode) window.rebuildPreview?.();
 
   updateWallHeightPreview();
   window.renderStepNav?.();
-  if (state.internalMode) window.saveDraftFromStep?.();
 }
+
+// ── Floating price widget ────────────────────────────────
+function renderWidget(headerHtml, rowsHtml, total) {
+  const widget = document.getElementById('price-widget');
+  if (!widget) return;
+  document.getElementById('pw-body').innerHTML = `
+    <div class="pw-header">${headerHtml}</div>
+    <div class="pw-items">${rowsHtml}</div>
+  `;
+  let totEl = document.getElementById('pw-total-pinned');
+  if (!totEl) {
+    totEl = document.createElement('div');
+    totEl.id = 'pw-total-pinned';
+    totEl.className = 'pw-total';
+    widget.appendChild(totEl);
+  }
+  totEl.innerHTML = `<span>Total</span><span>${formatMoney(total)}</span>`;
+  widget.style.display = 'flex';
+}
+
+function updatePriceWidget(basePrice, sqft) {
+  if (!state.style || !state.width || !state.length) return;
+  const label = ANCHOR[state.style]?.label || state.style;
+  renderWidget(
+    `${label} · ${state.width}×${state.length}ft · ${sqft} sqft`,
+    `<div class="pw-row"><span>Base price</span><span>${formatMoney(basePrice)}</span></div>`,
+    basePrice
+  );
+}
+window.updatePriceWidget = updatePriceWidget;
+
+window.updatePriceWidgetFull = function(quote) {
+  if (!quote?.building) return;
+  const b         = quote.building;
+  const label     = ANCHOR[b.style]?.label || b.style;
+  const baseTotal = quote.lineItems.find(i => i.id === 'base')?.total ?? 0;
+  const rows = quote.lineItems
+    .filter(i => !i.isTBD && i.total !== null && i.total > 0 && i.id !== 'base')
+    .map(i => {
+      const desc = i.description.length > 28 ? i.description.slice(0, 26) + '…' : i.description;
+      const qty  = i.qty > 1 ? ` ×${i.qty}` : '';
+      return `<div class="pw-row"><span>${desc}${qty}</span><span>${formatMoney(i.total)}</span></div>`;
+    }).join('') || `<div class="pw-row" style="opacity:.45"><span>No add-ons</span><span>—</span></div>`;
+  renderWidget(
+    `${label} · ${b.width}×${b.length}ft · ${b.sqft} sqft<br><span style="font-size:17px;font-weight:800;opacity:1">${formatMoney(baseTotal)}</span><span style="font-size:10px;opacity:.6"> base</span>`,
+    rows,
+    quote.pricing.total
+  );
+};
+
+// drag
+(function() {
+  const el = document.getElementById('price-widget');
+  const handle = document.getElementById('price-widget-drag');
+  if (!el || !handle) return;
+  let ox = 0, oy = 0, sx = 0, sy = 0;
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    sx = e.clientX; sy = e.clientY;
+    const r = el.getBoundingClientRect();
+    ox = window.innerWidth  - r.right;
+    oy = window.innerHeight - r.bottom;
+    function onMove(e) {
+      const dx = sx - e.clientX, dy = sy - e.clientY;
+      el.style.right  = Math.max(0, ox + dx) + 'px';
+      el.style.bottom = Math.max(0, oy + dy) + 'px';
+    }
+    function onUp() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+})();
 
 // ── Loft availability note (Step 7) ──────────────────────
 function updateLoftAvailability() {
@@ -145,6 +226,7 @@ window.selectCarriageVariant = function(v) {
   document.querySelectorAll('.cv-btn').forEach(el => {
     el.classList.toggle('selected', el.dataset.variant === v);
   });
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 4: Roof ─────────────────────────────────────────
@@ -212,6 +294,7 @@ window.selectGauge = function(gauge) {
     btn.style.borderColor   = active ? 'var(--blue)' : 'var(--border)';
     btn.style.color         = active ? 'white'        : 'var(--text)';
   });
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Step 4: Roof color selection ─────────────────────────
@@ -434,12 +517,14 @@ window.toggleDemoConcrete = function() {
   state.demo.concrete = chk?.checked ?? false;
   updateDemoPreview();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.onDemoConcreteRateChange = function() {
   const val = parseFloat(document.getElementById('demo-concrete-rate')?.value);
   state.demo.concreteRateSqft = isNaN(val) || val <= 0 ? 1.15 : val;
   updateDemoPreview();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 document.getElementById('demo-width').addEventListener('change', updateDemoPreview);

@@ -73,8 +73,9 @@ export const CONFIG = {
   VB_OVERLAP_FACTOR: 1.15,              // 15% overlap — vapor barrier coverage
 
   // Wall heights
-  WALL_HEIGHT_STANDARD: 8,             // ft
-  WALL_HEIGHT_TALL: 10,                // ft
+  WALL_HEIGHT_STANDARD: 8,              // ft
+  WALL_HEIGHT_TALL: 10,                 // ft
+  WALL_10FT_UPCHARGE_PER_LF: 4.50,     // labor + stud upgrade per LF of wall perimeter for 10ft walls
 
   // Roof pitch (standard)
   ROOF_PITCH_RISE_OVER_RUN: 5 / 12,   // 5/12 standard pitch

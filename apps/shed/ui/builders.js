@@ -44,11 +44,13 @@ function renderManDoorBuilder() {
 window.addManDoorRow = function() {
   state.manDoorItems.push({ type: 'solid', swing: 'left', qty: 1 });
   renderManDoorBuilder();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.removeManDoorRow = function(idx) {
   state.manDoorItems.splice(idx, 1);
   renderManDoorBuilder();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.updateManDoorRow = function(idx) {
@@ -58,6 +60,7 @@ window.updateManDoorRow = function(idx) {
     qty:   parseInt(document.getElementById(`mdr-qty-${idx}`)?.value) || 1,
   };
   renderManDoorBuilder();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // Window typed builder
@@ -97,11 +100,13 @@ function renderWindowBuilder() {
 window.addWindowRow = function() {
   state.windowItems.push({ type: 'single_hung', operation: null, qty: 1 });
   renderWindowBuilder();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.removeWindowRow = function(idx) {
   state.windowItems.splice(idx, 1);
   renderWindowBuilder();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.updateWindowRow = function(idx) {
@@ -113,6 +118,7 @@ window.updateWindowRow = function(idx) {
     qty: parseInt(document.getElementById(`wr-qty-${idx}`)?.value) || 1,
   };
   renderWindowBuilder();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 // ── Garage door typed builder ─────────────────────────────
@@ -212,12 +218,14 @@ window.addGarageDoorRow = function() {
   state.garageDoorItems.push({ category: 'door', spec: '8x7_std', sealColor: 'white', keyedHandle: false, qty: 1 });
   renderGarageDoorBuilder();
   renderRampSection();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.removeGarageDoorRow = function(idx) {
   state.garageDoorItems.splice(idx, 1);
   renderGarageDoorBuilder();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.updateGarageDoorRow = function(idx) {
@@ -236,6 +244,7 @@ window.updateGarageDoorRow = function(idx) {
   renderGarageDoorBuilder();
   renderRampSection();
   if (state.internalMode) window.renderFramingPanel();
+  if (state.internalMode) window.rebuildPreview?.();
 };
 
 window.renderGarageDoorBuilder = renderGarageDoorBuilder;
