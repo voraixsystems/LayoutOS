@@ -95,6 +95,7 @@ export const CONFIG = {
   VAPOR_BARRIER_SQFT_PER_ROLL: 500,
   FELT_COVERAGE_SQFT_PER_ROLL: 400,        // ~400 sqft per roll, 15lb felt
   HOUSEWRAP_COVERAGE_SQFT_PER_ROLL: 1000,  // Tyvek or equiv, ~1000 sqft per roll
+  ICW_SQFT_PER_ROLL: 225,                  // Grace Ice & Water Shield 36in×75ft, HD #202088840
 
   // Width premiums for 18ft and 20ft sheds
   WIDTH_PREMIUMS: { 18: 1.13, 20: 1.18 },

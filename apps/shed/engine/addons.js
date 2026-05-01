@@ -186,8 +186,8 @@ export function getIceWater(enabled, coverage, materials) {
   if (!enabled) return { lineItems: [], totalCost: 0, notes: [] };
   const p = getPrices();
   const rolls = (coverage === 'full')
-    ? Math.ceil(materials.roofSqft / 225)
-    : Math.ceil((materials.roofLength * 6) / 225);
+    ? Math.ceil(materials.roofSqft / CONFIG.ICW_SQFT_PER_ROLL)
+    : Math.ceil((materials.roofLength * 6 * 2) / CONFIG.ICW_SQFT_PER_ROLL);
   const cost  = rolls * (p.ice_water_shield_roll || 250);
   const label = (coverage === 'full') ? 'full roof' : 'lower 6ft eaves';
   return {

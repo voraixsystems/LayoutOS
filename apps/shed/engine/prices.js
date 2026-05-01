@@ -90,7 +90,7 @@ export const PRICES_FALLBACK = {
   pt_decking_5x4_12ft:    14.48,  // WeatherShield 5/4x6x12ft PT SYP — HD — verified 2026-04-29
   pt_decking_5x4_16ft:    19.38,  // WeatherShield 5/4x6x16ft PT SYP — HD SKU 206966950 — verified 2026-04-29
 
-  ice_water_shield_roll: 250.00,  // self-adhering 36in × 75ft roll (~225 sqft coverage)
+  ice_water_shield_roll: 199.00,  // Grace Ice & Water Shield 36in×75ft, 225 sqft — HD #202088840, verified 2026-05-01
   roofing_nail_box:       59.00,  // 30# coil/box roofing nails ~7200 count — 320 nails/square
 
   // Framing lumber — SPF (2x4, 2x6) + Fir (2x8, 2x10) + PT skids
