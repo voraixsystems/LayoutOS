@@ -195,8 +195,10 @@ export function buildQuote(inputs) {
   if (style === 'carriage' && inputs.carriageVariant) {
     baseStyleLabel = inputs.carriageVariant === 'classic' ? 'Classic' : 'Carriage';
   }
+  const BARN_STYLES = ['mini', 'low', 'maxi', 'double'];
+  const shingleType = BARN_STYLES.includes(style) ? '3-Tab Shingle' : 'Architectural Shingle';
   const shingleColorNote = roof !== 'metal'
-    ? ` — ${roofColorLabel}${isAutoColor ? ' (default)' : ''}`
+    ? ` — ${shingleType}, ${roofColorLabel}${isAutoColor ? ' (default)' : ''}`
     : '';
   lineItems.push({
     id: 'base',
