@@ -162,6 +162,7 @@ export function buildQuote(inputs) {
 
   // Premium color upcharge — per panel LF (crinkle/matte finish)
   const roofColorPremium = inputs.roofColorPremium || false;
+  const isAutoColor      = !inputs.roofColor;
   const roofColorLabel   = inputs.roofColorLabel   || (roof === 'metal' ? 'Stealth Black' : 'Charcoal');
   const roofColorTier    = inputs.roofColorTier    || 'base';
   const premiumColorCost = (roof === 'metal' && roofColorPremium)
@@ -194,11 +195,14 @@ export function buildQuote(inputs) {
   if (style === 'carriage' && inputs.carriageVariant) {
     baseStyleLabel = inputs.carriageVariant === 'classic' ? 'Classic' : 'Carriage';
   }
+  const shingleColorNote = roof !== 'metal'
+    ? ` — ${roofColorLabel}${isAutoColor ? ' (default)' : ''}`
+    : '';
   lineItems.push({
     id: 'base',
     qty: 1,
     description: (style && width && length)
-      ? `${baseStyleLabel} — ${width}×${length}ft, ${wallHeight}ft walls`
+      ? `${baseStyleLabel} — ${width}×${length}ft, ${wallHeight}ft walls${shingleColorNote}`
       : 'Base price — complete configuration to calculate',
     unitPrice: applyOverride(priceOverrides, 'base', basePrice),
     total: applyOverride(priceOverrides, 'base', basePrice),
@@ -243,7 +247,7 @@ export function buildQuote(inputs) {
 
   // Metal roof
   if (metalRoofAddon > 0) {
-    const colorNote = roofColorLabel ? ` — ${roofColorLabel}` : '';
+    const colorNote = ` — ${roofColorLabel}${isAutoColor ? ' (default)' : ''}`;
     lineItems.push({
       id: 'metal_roof',
       qty: 1,
@@ -557,7 +561,7 @@ export function buildQuote(inputs) {
       website: CONFIG.COMPANY_WEBSITE,
     },
     building: { style, styleLabel: ANCHOR[style]?.label || style, width, length, sqft, wallHeight, roof, siding, conditioningLevel, roofPitch: CONFIG.ROOF_PITCH_LABEL,
-      roofColor: inputs.roofColor || null, roofColorLabel },
+      roofColor: inputs.roofColor || null, roofColorLabel, isAutoColor },
     materials,
     conditioning,
     roofSheathing: roofSheathing || null,

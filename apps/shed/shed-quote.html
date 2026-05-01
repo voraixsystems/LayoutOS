@@ -13,7 +13,7 @@
   <span class="brand-sub">LayoutOS</span>
   <span class="brand-main">Shed Estimator</span>
   <span onclick="showChangelog()" title="What's new" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;align-self:flex-end;padding-bottom:2px;margin-left:4px">
-    <span style="font-size:10px;color:#9ca3af;text-decoration:underline dotted">v1.3</span>
+    <span style="font-size:10px;color:#9ca3af;text-decoration:underline dotted">v1.4</span>
     <span style="font-size:10px;color:#60a5fa;white-space:nowrap">what's new ↗</span>
   </span>
   <span id="int-badge">⬡ INTERNAL MODE</span>
@@ -735,17 +735,20 @@
 <div id="changelog-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:10px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);position:relative">
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#6b7280;text-transform:uppercase;margin-bottom:4px">What's New</div>
-    <div style="font-size:20px;font-weight:800;color:#1d4ed8;margin-bottom:18px">LayoutOS v1.3</div>
+    <div style="font-size:20px;font-weight:800;color:#1d4ed8;margin-bottom:18px">LayoutOS v1.4</div>
     <ul style="margin:0;padding-left:18px;line-height:1.9;font-size:14px;color:#374151">
-      <li><strong>Live Estimate widget</strong> — floating box shows your running total as you click. Drag it anywhere, resize it, watch every line item appear and disappear in real time</li>
-      <li><strong>10ft wall upcharge</strong> — selecting 10ft walls now adds two line items: extra LP siding material (calculated from real sheet diff) and labor &amp; stud upgrade scaled by wall perimeter (LF)</li>
-      <li><strong>All steps now update the live price</strong> — metal roof, siding, doors, windows, garage doors, shop doors, ramps, demo, shelving, slab, gauge, carriage variant — every click reflects instantly</li>
-      <li><strong>Price sticking bug fixed</strong> — changing style or size no longer locks the price to a previous configuration's value</li>
-      <li><strong>Size preserved on style swap</strong> — switching styles keeps your current dimensions if they're valid for the new style</li>
-      <li><strong>Draft system removed</strong> — was causing stale prices to persist across sessions</li>
-      <li>Added <strong>Wood Build Shop Doors</strong> — 4 sizes, siding-aware pricing (v1.2 carry-forward)</li>
-      <li>Added <strong>Ramps</strong> — context-aware, driven by door selections (v1.2 carry-forward)</li>
+      <li><strong>Roof color now shows everywhere</strong> — selected color appears on the line item, in the preview, and on the client quote. Metal shows in the roof upgrade line item; shingle shows in the base building line item</li>
+      <li><strong>Default color flagged</strong> — if no color chip was selected, the estimate shows <em>(default)</em> next to the color so you know to confirm it before finalizing</li>
     </ul>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e5e7eb">
+      <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px">v1.3</div>
+      <ul style="margin:0;padding-left:18px;line-height:1.9;font-size:13px;color:#6b7280">
+        <li>Live Estimate widget — floating, draggable, updates on every click</li>
+        <li>10ft wall upcharge — material + labor line items</li>
+        <li>Price sticking bug fixed — style/size change clears stale price</li>
+        <li>Draft system removed</li>
+      </ul>
+    </div>
     <button onclick="document.getElementById('changelog-backdrop').style.display='none'" style="margin-top:22px;width:100%;padding:10px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer">Got it</button>
   </div>
 </div>

@@ -263,7 +263,9 @@ function render(q) {
   document.getElementById('meta-date').textContent     = q.date || formatDate();
 
   // Specs
-  const roofLabel   = b.roof   === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle';
+  const roofType    = b.roof === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle';
+  const colorSuffix = b.roofColorLabel ? ` — ${b.roofColorLabel}${b.isAutoColor ? ' (default)' : ''}` : '';
+  const roofLabel   = `${roofType}${colorSuffix}`;
   const sidingLabel = b.siding === 'vinyl' ? 'Vinyl' : 'LP SmartSide';
   const specs = [
     ['Style',       b.styleLabel || b.style || '—'],

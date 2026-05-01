@@ -49,9 +49,12 @@ function renderPreview(quote) {
   const { lineItems, pricing } = quote;
   const b = quote.building;
 
+  const roofType    = b.roof === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle';
+  const colorSuffix = b.roofColorLabel ? ` — ${b.roofColorLabel}${b.isAutoColor ? ' (default)' : ''}` : '';
+  const roofLabel   = `${roofType}${colorSuffix}`;
+
   if (!state.internalMode) {
     // Client mode — specs + total only, no line item breakdown
-    const roofLabel   = b.roof   === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle';
     const sidingLabel = b.siding === 'vinyl' ? 'Vinyl' : 'LP SmartSide';
     const addOns = lineItems.filter(i =>
       i.group && !['base','roof','siding','conditioning'].includes(i.group) && i.description
@@ -103,7 +106,7 @@ function renderPreview(quote) {
         <div>${b.sqft} sqft</div>
       </div>
       <div class="ql-row"><div class="ql-desc">Wall height</div><div>${b.wallHeight}ft</div></div>
-      <div class="ql-row"><div class="ql-desc">Roof</div><div>${b.roof === 'metal' ? 'Metal R-Panel' : 'Architectural Shingle'}</div></div>
+      <div class="ql-row"><div class="ql-desc">Roof</div><div>${roofLabel}</div></div>
       <div class="ql-row"><div class="ql-desc">Siding</div><div>${b.siding === 'vinyl' ? 'Vinyl' : 'LP SmartSide'}</div></div>
       <div class="ql-row"><div class="ql-desc">Conditioning</div><div>${quote.conditioning?.label || '—'}</div></div>
     </div>
